@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="es">
+<head>
+    <title>Usuario - Formulario</title>
+</head>
+<body>
+    <th:block layout:fragment="content">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>
+                            <i class="fas fa-user"></i>
+                            <span th:if="!${editando}">Nuevo Usuario</span>
+                            <span th:if="${editando}">Editar Usuario</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" 
+                              th:action="${editando} ? @{/usuarios/actualizar/{id}(id=${usuario.id})} : @{/usuarios/guardar}"
+                              th:object="${usuario}">
+                            
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="fas fa-login"></i> Nombre de Usuario *
+                                </label>
+                                <input type="text" class="form-control" id="username" 
+                                       th:field="*{username}" required 
+                                       th:disabled="${editando}">
+                                <small class="text-danger" th:if="${#fields.hasErrors('username')}" 
+                                       th:errors="*{username}"></small>
+                            </div>
+
+                            <div class="mb-3" th:unless="${editando}">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock"></i> Contraseña *
+                                </label>
+                                <input type="password" class="form-control" id="password" 
+                                       th:field="*{password}" required>
+                                <small class="text-danger" th:if="${#fields.hasErrors('password')}" 
+                                       th:errors="*{password}"></small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="nombreCompleto" class="form-label">
+                                    <i class="fas fa-id-card"></i> Nombre Completo
+                                </label>
+                                <input type="text" class="form-control" id="nombreCompleto" 
+                                       th:field="*{nombreCompleto}">
+                                <small class="text-danger" th:if="${#fields.hasErrors('nombreCompleto')}" 
+                                       th:errors="*{nombreCompleto}"></small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email
+                                </label>
+                                <input type="email" class="form-control" id="email" 
+                                       th:field="*{email}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">
+                                    <i class="fas fa-phone"></i> Teléfono
+                                </label>
+                                <input type="tel" class="form-control" id="telefono" 
+                                       th:field="*{telefono}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rol" class="form-label">
+                                    <i class="fas fa-star"></i> Rol *
+                                </label>
+                                <select class="form-control" id="rol" th:field="*{rol}" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r.descripcion}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">
+                                    <i class="fas fa-toggle-on"></i> Estado
+                                </label>
+                                <select class="form-control" id="estado" th:field="*{estado}">
+                                    <option value="true">Activo</option>
+                                    <option value="false">Inactivo</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Guardar
+                                </button>
+                                <a href="/usuarios" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,168 @@
+/* --- VARIABLES DE COLOR (Moderno y Pollería) --- */
+:root {
+    --primary: #ff7e00;
+    --primary-dark: #e66a00;
+    --sidebar-bg: #1e1e2f;
+    --body-bg: #f4f7f6;
+    --card-shadow: 0 4px 20px 0 rgba(0,0,0,0.05);
+    --text-muted: #6c757d;
+}
+
+/* --- REESTRUCTURACIÓN GENERAL --- */
+body {
+    background-color: var(--body-bg);
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif; /* Tipografía más moderna */
+    color: #334155;
+    margin: 0;
+}
+
+.container-fluid {
+    padding-left: 0;
+}
+
+/* --- SIDEBAR REFORMADO --- */
+.sidebar {
+    height: 100vh;
+    background: var(--sidebar-bg);
+    padding: 2rem 1rem !important;
+    position: fixed; /* Mantiene el menú fijo al hacer scroll */
+    width: 16.66%;
+}
+
+.sidebar h4 {
+    font-size: 1.25rem;
+    letter-spacing: 1px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 1.5rem;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.menu-item:hover, .menu-item.active {
+    background: rgba(255, 126, 0, 0.15);
+    color: var(--primary);
+    transform: translateX(5px);
+}
+
+.menu-item.active {
+    background: var(--primary);
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(255, 126, 0, 0.3);
+}
+
+/* --- ÁREA DE CONTENIDO --- */
+.col-10 {
+    margin-left: 16.66%; /* Compensa el sidebar fixed */
+    padding: 2.5rem !important;
+    background: var(--body-bg);
+    min-height: 100vh;
+}
+
+h2 {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.75rem;
+}
+
+/* --- TARJETAS DE RESUMEN (Ventas) --- */
+.card {
+    border: none;
+    border-radius: 16px;
+    background: white;
+    box-shadow: var(--card-shadow);
+    padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.card h6 {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.card h3 {
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+}
+
+/* --- TABLAS MODERNAS --- */
+.table-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    margin-top: 2rem;
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0 8px; /* Espaciado entre filas */
+}
+
+.table thead th {
+    background-color: transparent !important;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    border: none;
+    padding: 1rem;
+}
+
+.table tbody tr {
+    background-color: white;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.table tbody td {
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+    border: none;
+    border-top: 1px solid #f1f5f9;
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc;
+    transform: scale(1.005);
+}
+
+/* --- BADGES (Estados) --- */
+.badge {
+    border-radius: 8px;
+    padding: 0.5em 0.8em;
+    font-weight: 500;
+}
+
+.bg-success { background-color: #dcfce7 !important; color: #15803d !important; }
+.bg-warning { background-color: #fef9c3 !important; color: #a16207 !important; }
+
+/* --- BOTONES --- */
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(255, 126, 0, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}

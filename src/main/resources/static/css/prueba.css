@@ -1,0 +1,175 @@
+* {
+    /* border: 0.1px solid red; */
+}
+
+.TEST {
+    border: 2px solid red;
+}
+body {
+    padding-top: 92px;
+}
+
+/* NAVBAR */
+header {    /* razon de la carga rada */
+    position: relative;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+}
+.navbar_custom {
+    background-color: #769a35;
+    display: contents;
+}
+
+.nav_barra {
+    background-color: #477e14;
+    border-top: 8px solid rgb(254, 218, 118);
+}
+
+nav .boton-pedir {
+    text-decoration: none;
+    color: white;
+    border-radius: 8px;
+    padding-block: 5px;
+    padding-inline: 20px;
+    background-color: #6cbe24;
+    font-weight: 500;
+    margin-right: 20px;
+    transition: all 0.2s ease;
+}
+
+nav .boton-pedir:hover {
+    background-color: #9edd3e;
+    border-radius: 10px;
+}
+
+/* offcanvas */
+nav .bc {
+    border: 0;
+    border-radius: 10px;
+    text-align: left;
+    padding-inline: 20px;
+    padding-block: 10px;
+}
+
+nav .bc_true {
+    background-color: #088D08;
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+nav .bc_true:hover {
+    border-radius: 18px;
+    background-color: #6cbe24;
+    color: white;
+}
+
+nav .bc_false {
+    background-color: #FDFDFD;
+    color: black;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+nav .bc_false:hover {
+    border-radius: 16px;
+    background-color: #088D08;
+    color: white;
+}
+
+/* MAIN */
+/* .borde_separador {
+    border-top: 1px solid rgb(115, 115, 115);
+} */
+.menu-ajustado {
+    max-width: 500px;
+    /* Ajusta este valor: menor número = iconos más pequeños */
+    margin: 0 auto;
+}
+
+/* 2. Controlamos el texto para que no sea muy grande en móviles */
+.nombre-plato {
+    font-size: clamp(0.7rem, 2vw, 1rem);
+    font-weight: bold;
+}
+
+/* 3. Opcional: Efecto visual al pasar el mouse */
+.item-menu:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+    border-color: #28a745 !important;
+    /* Ejemplo con color verde */
+}
+
+
+/* DATOS DE LA POLLERIA*/
+/* --- Estilos Generales --- */
+.contenido-texto {
+    color: #ffffff !important; /* Fuerza las letras a blanco */
+}
+
+.nuestra-historia .contenedor-img img {
+    object-fit: cover;
+    height: 400px;
+}
+
+/* --- Bloque Verde Claro --- */
+.seccion-verde-claro {
+    background-color: #477e14; /* Puedes cambiar este valor por tu verde claro */
+}
+
+/* --- Bloque Verde Oscuro --- */
+.seccion-verde-oscuro {
+    background-color: #16551d; /* Puedes cambiar este valor por tu verde oscuro */
+}
+
+/* --- Botón Personalizado Verde --- */
+.btn-custom-verde {
+    background-color: #80aa1d;
+    color: white;
+    border: 2px solid rgb(142, 192, 56); /* Borde blanco para que resalte */
+    border-radius: 50px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-custom-verde:hover {
+    background-color: #ffffff;
+    color: #27ae60; /* Al pasar el mouse, los colores se invierten */
+    border-color: #ffffff;
+}
+
+/* FOOTER */
+.footer-custom {
+  background-color: #477e14 !important; /* Un negro más profundo */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.footer-custom h6 {
+  letter-spacing: 1px;
+}
+
+.footer-custom .x-small {
+  font-size: 0.75rem;
+}
+
+.footer-custom .hover-white:hover {
+  color: #ffffff !important;
+  transition: color 0.3s ease;
+}
+
+.footer-custom i.text-danger {
+  color: #e61e2a !important; /* Rojo característico de pollerías/restaurantes */
+}
+
+.footer-custom .border-danger {
+  border-color: #e61e2a !important;
+}
+
+/* Ajuste para los iconos de redes sociales si usas Bootstrap Icons */
+.social-icons a:hover {
+  opacity: 0.8;
+}
+footer .ico_polleria {
+    /* filter: grayscale(100%); */
+}

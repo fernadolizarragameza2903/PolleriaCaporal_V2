@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="es">
+<head>
+    <title>Reportes - Pollería Caporal</title>
+</head>
+<body>
+    <th:block layout:fragment="content">
+        <h2 class="mb-4">
+            <i class="fas fa-chart-bar"></i> Reportes de Ventas
+        </h2>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaFin" class="form-label">Fecha Fin</label>
+                        <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="empleado" class="form-label">Empleado</label>
+                        <select class="form-control" id="empleado" name="empleado">
+                            <option value="">-- Todos --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="text-muted">Total Ventas</h5>
+                        <h3 class="text-primary">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="text-muted">Monto Total</h5>
+                        <h3 class="text-success">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="text-muted">Venta Promedio</h5>
+                        <h3 class="text-info">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="text-muted">Mejor Vendedor</h5>
+                        <h3 class="text-warning">-</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de reportes -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Detalle de Ventas</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Empleado</th>
+                                <th>Cliente</th>
+                                <th>Productos</th>
+                                <th>Cantidad</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox"></i> No hay reportes disponibles
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="mt-4">
+            <button class="btn btn-success" onclick="exportarPDF()">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
+            <button class="btn btn-info" onclick="exportarExcel()">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+            </button>
+        </div>
+    </th:block>
+
+    <th:block layout:fragment="extra-js">
+        <script>
+            function exportarPDF() {
+                alert('Función de exportación PDF en desarrollo');
+            }
+            
+            function exportarExcel() {
+                alert('Función de exportación Excel en desarrollo');
+            }
+        </script>
+    </th:block>
+</body>
+</html>

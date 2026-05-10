@@ -1,0 +1,209 @@
+package com.polleriacaporal.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Entidad que representa un Pedido realizado en el sistema
+ * Contiene información del cliente, fecha, total y detalles del pedido
+ */
+@Entity
+@Table(name = "pedidos")
+public class Pedido {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "fecha_pedido", nullable = false, updatable = false)
+    private LocalDateTime fechaPedido;
+
+    @Column(name = "cliente_nombre")
+    private String clienteNombre;
+
+    @Column(name = "cliente_telefono")
+    private String clienteTelefono;
+
+    @Column(name = "cliente_direccion")
+    private String clienteDireccion;
+
+    @Positive(message = "El total debe ser mayor a 0")
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal total;
+
+    @Column(name = "nota", columnDefinition = "TEXT")
+    private String nota;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoVenta estado = EstadoVenta.PENDIENTE;
+
+    @Column(name = "fecha_entrega")
+    private LocalDateTime fechaEntrega;
+
+    @Column(name = "fecha_actualizacion")
+    private LocalDateTime fechaActualizacion;
+
+    // Relación ManyToOne: Un pedido es atendido por un usuario
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    // Relación OneToMany: Un pedido puede tener varios detalles
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<DetallePedido> detalles = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        fechaPedido = LocalDateTime.now();
+        fechaActualizacion = LocalDateTime.now();
+        if (total == null) {
+            total = BigDecimal.ZERO;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        fechaActualizacion = LocalDateTime.now();
+    }
+
+    // Constructores
+    public Pedido() {
+    }
+
+    public Pedido(Usuario usuario, String clienteNombre, BigDecimal total) {
+        this.usuario = usuario;
+        this.clienteNombre = clienteNombre;
+        this.total = total;
+        this.estado = EstadoVenta.PENDIENTE;
+    }
+
+    // Métodos de negocio
+    public void calcularTotal() {
+        this.total = detalles.stream()
+                .map(DetallePedido::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void agregarDetalle(DetallePedido detalle) {
+        detalles.add(detalle);
+        detalle.setPedido(this);
+    }
+
+    public void removerDetalle(DetallePedido detalle) {
+        detalles.remove(detalle);
+        detalle.setPedido(null);
+    }
+
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getFechaPedido() {
+        return fechaPedido;
+    }
+
+    public void setFechaPedido(LocalDateTime fechaPedido) {
+        this.fechaPedido = fechaPedido;
+    }
+
+    public String getClienteNombre() {
+        return clienteNombre;
+    }
+
+    public void setClienteNombre(String clienteNombre) {
+        this.clienteNombre = clienteNombre;
+    }
+
+    public String getClienteTelefono() {
+        return clienteTelefono;
+    }
+
+    public void setClienteTelefono(String clienteTelefono) {
+        this.clienteTelefono = clienteTelefono;
+    }
+
+    public String getClienteDireccion() {
+        return clienteDireccion;
+    }
+
+    public void setClienteDireccion(String clienteDireccion) {
+        this.clienteDireccion = clienteDireccion;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
+
+    public String getNota() {
+        return nota;
+    }
+
+    public void setNota(String nota) {
+        this.nota = nota;
+    }
+
+    public EstadoVenta getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoVenta estado) {
+        this.estado = estado;
+    }
+
+    public LocalDateTime getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(LocalDateTime fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+
+    public LocalDateTime getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public List<DetallePedido> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<DetallePedido> detalles) {
+        this.detalles = detalles;
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", fechaPedido=" + fechaPedido +
+                ", clienteNombre='" + clienteNombre + '\'' +
+                ", total=" + total +
+                ", estado=" + estado +
+                '}';
+    }
+}
