@@ -33,7 +33,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr th:if="${pedidos != null and pedidos.size() > 0}" th:each="pedido : ${pedidos}">
+                                <td th:text="${pedido.id}">1</td>
+                                <td th:text="${pedido.clienteNombre}">Cliente</td>
+                                <td th:text="${pedido.clienteTelefono}">999999999</td>
+                                <td th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">10/05/2025 14:30</td>
+                                <td th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">S/ 0.00</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${pedido.estado.name() == 'PENDIENTE' ? 'bg-warning' : pedido.estado.name() == 'PAGADO' ? 'bg-success' : 'bg-danger'}"
+                                          th:text="${pedido.estado.name()}">PENDIENTE</span>
+                                </td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-info" th:href="@{/empleados/pedidos/{id}(id=${pedido.id})}">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${pedidos == null or pedidos.size() == 0}">
                                 <td colspan="7" class="text-center text-muted py-4">
                                     <i class="fas fa-inbox"></i> No hay pedidos registrados
                                 </td>

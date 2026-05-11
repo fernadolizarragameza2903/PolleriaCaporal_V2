@@ -31,6 +31,13 @@ public class Pedido {
     @Column(name = "cliente_direccion")
     private String clienteDireccion;
 
+    @Positive(message = "El subtotal debe ser mayor a 0")
+    @Column(name = "subtotal", nullable = false, precision = 12, scale = 2)
+    private BigDecimal subtotal = BigDecimal.ZERO;
+
+    @Column(name = "igv", nullable = false, precision = 12, scale = 2)
+    private BigDecimal igv = BigDecimal.ZERO;
+
     @Positive(message = "El total debe ser mayor a 0")
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
@@ -84,9 +91,11 @@ public class Pedido {
 
     // Métodos de negocio
     public void calcularTotal() {
-        this.total = detalles.stream()
+        this.subtotal = detalles.stream()
                 .map(DetallePedido::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        this.igv = this.subtotal.multiply(new BigDecimal("0.18"));
+        this.total = this.subtotal.add(this.igv);
     }
 
     public void agregarDetalle(DetallePedido detalle) {
@@ -146,6 +155,22 @@ public class Pedido {
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public BigDecimal getIgv() {
+        return igv;
+    }
+
+    public void setIgv(BigDecimal igv) {
+        this.igv = igv;
     }
 
     public String getNota() {

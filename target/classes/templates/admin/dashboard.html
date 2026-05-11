@@ -116,9 +116,24 @@
                         <h5>Actividad Reciente</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted text-center py-4">
+                        <div th:if="${#lists.isEmpty(actividadesRecientes)}" class="text-muted text-center py-4">
                             <i class="fas fa-inbox"></i> No hay actividades registradas aún
-                        </p>
+                        </div>
+                        <ul th:unless="${#lists.isEmpty(actividadesRecientes)}" class="list-unstyled">
+                            <li th:each="actividad : ${actividadesRecientes}" class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                <div class="flex-shrink-0">
+                                    <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%;">
+                                        <i th:if="${actividad.contains('pedido')}" class="fas fa-shopping-cart"></i>
+                                        <i th:if="${actividad.contains('usuario')}" class="fas fa-user"></i>
+                                        <i th:if="${actividad.contains('producto')}" class="fas fa-box"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-0" th:text="${actividad}">Actividad</p>
+                                    <small class="text-muted">Hace poco</small>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

@@ -94,29 +94,38 @@
                         <h5>Pedidos Recientes</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted text-center py-4">
+                        <div th:if="${#lists.isEmpty(pedidosRecientes)}" class="text-muted text-center py-4">
                             <i class="fas fa-inbox"></i> No hay pedidos recientes
-                        </p>
+                        </div>
+                        <ul th:unless="${#lists.isEmpty(pedidosRecientes)}" class="list-unstyled">
+                            <li th:each="pedido : ${pedidosRecientes}" class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                <div>
+                                    <p class="mb-1 fw-bold" th:text="${pedido.clienteNombre}">Cliente</p>
+                                    <small class="text-muted" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">Fecha</small>
+                                </div>
+                                <strong class="text-success" th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total,1,2)}">S/ 0.00</strong>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Estadísticas del Día</h5>
+                        <h5>Estadísticas Generales</h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3">
-                            <span>Pedidos:</span>
-                            <strong>0</strong>
+                            <span>Total de Pedidos:</span>
+                            <strong th:text="${totalPedidos}">0</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
-                            <span>Ventas Totales:</span>
-                            <strong>$0.00</strong>
+                            <span>Monto Total:</span>
+                            <strong th:text="'S/ ' + ${#numbers.formatDecimal(montoTotal,1,2)}">S/ 0.00</strong>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Monto Total:</span>
-                            <strong>$0.00</strong>
+                            <span>Promedio por Pedido:</span>
+                            <strong th:text="'S/ ' + ${#numbers.formatDecimal(ventaPromedio,1,2)}">S/ 0.00</strong>
                         </div>
                     </div>
                 </div>

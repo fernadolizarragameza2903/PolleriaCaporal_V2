@@ -8,139 +8,258 @@
 </head>
 <body>
     <th:block layout:fragment="content">
-        <h2 class="mb-4">
-            <i class="fas fa-plus-circle"></i> Registrar Nuevo Pedido
-        </h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-0">
+                    <i class="fas fa-plus-circle"></i> Nuevo Pedido
+                </h2>
+                <p class="text-muted mb-0">Selecciona productos, elige la forma de entrega y revisa el resumen antes de guardar.</p>
+            </div>
+        </div>
 
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <form method="post" action="#" id="formPedido">
-                            <!-- Datos del Cliente -->
-                            <fieldset class="mb-4">
-                                <legend class="fs-5 mb-3">
-                                    <i class="fas fa-user"></i> Datos del Cliente
-                                </legend>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="clienteNombre" class="form-label">Nombre del Cliente *</label>
-                                            <input type="text" class="form-control" id="clienteNombre" 
-                                                   name="clienteNombre" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="clienteTelefono" class="form-label">Teléfono</label>
-                                            <input type="tel" class="form-control" id="clienteTelefono" 
-                                                   name="clienteTelefono">
-                                        </div>
-                                    </div>
+        <form id="formPedido" method="post" action="/empleados/pedidos/guardar">
+            <input type="hidden" name="productosJson" id="productosJson">
+            <div class="row gx-4">
+                <div class="col-lg-7">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Datos del Cliente</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row gy-3">
+                                <div class="col-md-6">
+                                    <label for="clienteNombre" class="form-label">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="clienteNombre" name="clienteNombre" placeholder="Opcional">
                                 </div>
-                                <div class="mb-3">
+                                <div class="col-md-6">
+                                    <label for="clienteTelefono" class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="clienteTelefono" name="clienteTelefono" placeholder="Opcional">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="tipoEntrega" class="form-label">Tipo de Entrega</label>
+                                    <select class="form-select" id="tipoEntrega" name="tipoEntrega">
+                                        <option value="mesa">En mesa</option>
+                                        <option value="llevar">Para llevar</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="mesaDiv">
+                                    <label for="numeroMesa" class="form-label">Número de Mesa</label>
+                                    <select class="form-select" id="numeroMesa" name="numeroMesa">
+                                        <option th:each="i : ${#numbers.sequence(1,20)}" th:value="${i}" th:text="${i}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-12" id="direccionDiv" style="display:none;">
                                     <label for="clienteDireccion" class="form-label">Dirección de Entrega</label>
-                                    <textarea class="form-control" id="clienteDireccion" 
-                                              name="clienteDireccion" rows="2"></textarea>
+                                    <input type="text" class="form-control" id="clienteDireccion" name="clienteDireccion" placeholder="Ingresa dirección para delivery">
                                 </div>
-                            </fieldset>
-
-                            <!-- Productos del Pedido -->
-                            <fieldset class="mb-4">
-                                <legend class="fs-5 mb-3">
-                                    <i class="fas fa-box"></i> Productos
-                                </legend>
-                                <table class="table" id="tablaProductos">
-                                    <thead>
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th>Precio</th>
-                                            <th>Cantidad</th>
-                                            <th>Subtotal</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cuerpoProductos">
-                                        <!-- Se agregará dinámicamente -->
-                                    </tbody>
-                                </table>
-                                <button type="button" class="btn btn-sm btn-info" id="btnAgregarProducto">
-                                    <i class="fas fa-plus"></i> Agregar Producto
-                                </button>
-                            </fieldset>
-
-                            <!-- Notas -->
-                            <div class="mb-3">
-                                <label for="nota" class="form-label">Notas Especiales</label>
-                                <textarea class="form-control" id="nota" name="nota" rows="3" 
-                                          placeholder="Ej: Sin ají, extra salsa..."></textarea>
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Botones -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Productos Disponibles</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6" th:each="producto : ${productos}">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <div>
+                                                <h6 class="card-title" th:text="${producto.nombre}">Producto</h6>
+                                                <p class="mb-2 text-muted" th:text="${producto.categoria}">Categoría</p>
+                                                <p class="mb-0 fw-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio,1,2)}">S/ 0.00</p>
+                                            </div>
+                                            <button type="button" class="btn btn-outline-primary btn-sm mt-3 add-producto"
+                                                    th:data-id="${producto.id}"
+                                                    th:data-nombre="${producto.nombre}"
+                                                    th:data-precio="${producto.precio}">
+                                                <i class="fas fa-plus"></i> Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Notas del Pedido</h5>
+                        </div>
+                        <div class="card-body">
+                            <textarea class="form-control" id="nota" name="nota" rows="3" placeholder="Ej: Sin ají, extra salsa..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card sticky-top top-4">
+                        <div class="card-header">
+                            <h5>Resumen del Pedido</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="mensajeResumen" class="text-center text-muted py-4">
+                                <i class="fas fa-box-open fa-2x mb-3"></i>
+                                <div>No hay productos agregados.</div>
+                            </div>
+                            <ul id="listaProductos" class="list-group mb-3"></ul>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <strong id="subtotal">S/ 0.00</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>IGV 18%</span>
+                                <strong id="impuesto">S/ 0.00</strong>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3 fw-semibold fs-5">
+                                <span>Total</span>
+                                <strong id="total">S/ 0.00</strong>
+                            </div>
                             <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary w-100" id="btnGuardar">
                                     <i class="fas fa-save"></i> Guardar Pedido
                                 </button>
-                                <a href="/empleados/dashboard" class="btn btn-secondary">
+                                <a href="/empleados/dashboard" class="btn btn-secondary w-100">
                                     <i class="fas fa-times"></i> Cancelar
                                 </a>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Resumen -->
-            <div class="col-md-4">
-                <div class="card sticky-top">
-                    <div class="card-header">
-                        <h5>Resumen del Pedido</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Subtotal:</span>
-                            <strong id="subtotal">$0.00</strong>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span>Impuesto (18%):</span>
-                            <strong id="impuesto">$0.00</strong>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between" style="font-size: 1.2rem;">
-                            <span>Total:</span>
-                            <strong id="total" style="color: var(--primary-color);">$0.00</strong>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </th:block>
 
     <th:block layout:fragment="extra-js">
         <script>
-            document.getElementById('btnAgregarProducto').addEventListener('click', function() {
-                const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>
-                        <select class="form-control form-control-sm producto-select" required>
-                            <option value="">-- Seleccionar --</option>
-                            <option value="1">Polla a la Brasa</option>
-                            <option value="2">Menú Familiar</option>
-                        </select>
-                    </td>
-                    <td><input type="number" class="form-control form-control-sm precio" readonly></td>
-                    <td><input type="number" class="form-control form-control-sm cantidad" value="1" min="1"></td>
-                    <td><input type="number" class="form-control form-control-sm subtotal" readonly></td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-danger btn-eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                document.getElementById('cuerpoProductos').appendChild(fila);
-                
-                fila.querySelector('.btn-eliminar').addEventListener('click', function() {
-                    fila.remove();
+            document.addEventListener('DOMContentLoaded', function () {
+                const tipoEntrega = document.getElementById('tipoEntrega');
+                const mesaDiv = document.getElementById('mesaDiv');
+                const direccionDiv = document.getElementById('direccionDiv');
+                const listaProductos = document.getElementById('listaProductos');
+                const mensajeResumen = document.getElementById('mensajeResumen');
+                const subtotalEl = document.getElementById('subtotal');
+                const impuestoEl = document.getElementById('impuesto');
+                const totalEl = document.getElementById('total');
+                const productosJson = document.getElementById('productosJson');
+                const addButtons = document.querySelectorAll('.add-producto');
+
+                function actualizarEntrega() {
+                    if (tipoEntrega.value === 'mesa') {
+                        mesaDiv.style.display = 'block';
+                        direccionDiv.style.display = 'none';
+                    } else {
+                        mesaDiv.style.display = 'none';
+                        direccionDiv.style.display = 'block';
+                    }
+                }
+
+                tipoEntrega.addEventListener('change', actualizarEntrega);
+                actualizarEntrega();
+
+                function formatearMonto(value) {
+                    return 'S/ ' + value.toFixed(2);
+                }
+
+                function actualizarResumen() {
+                    const items = listaProductos.querySelectorAll('li');
+                    if (items.length === 0) {
+                        mensajeResumen.style.display = 'block';
+                    } else {
+                        mensajeResumen.style.display = 'none';
+                    }
+
+                    let subtotal = 0;
+                    const productos = [];
+
+                    items.forEach(item => {
+                        const precio = parseFloat(item.dataset.precio);
+                        const cantidad = parseInt(item.querySelector('.cantidad').textContent, 10);
+                        const itemSubtotal = precio * cantidad;
+                        subtotal += itemSubtotal;
+                        item.querySelector('.subtotal').textContent = formatearMonto(itemSubtotal);
+                        productos.push(item.dataset.id + ':' + cantidad);
+                    });
+
+                    const impuesto = subtotal * 0.18;
+                    const total = subtotal + impuesto;
+
+                    subtotalEl.textContent = formatearMonto(subtotal);
+                    impuestoEl.textContent = formatearMonto(impuesto);
+                    totalEl.textContent = formatearMonto(total);
+                    productosJson.value = productos.join(',');
+                }
+
+                function agregarProducto(id, nombre, precio) {
+                    const existente = listaProductos.querySelector(`li[data-id="${id}"]`);
+                    if (existente) {
+                        const cantidad = existente.querySelector('.cantidad');
+                        cantidad.textContent = parseInt(cantidad.textContent, 10) + 1;
+                        actualizarResumen();
+                        return;
+                    }
+
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center py-3';
+                    li.dataset.id = id;
+                    li.dataset.precio = precio;
+                    li.innerHTML = `
+                        <div>
+                            <div class="fw-bold">${nombre}</div>
+                            <div class="text-muted small">Precio unitario: ${formatearMonto(precio)}</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="d-flex align-items-center justify-content-end gap-2 mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-decrease">-</button>
+                                <span class="cantidad">1</span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-increase">+</button>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                <span class="subtotal">${formatearMonto(precio)}</span>
+                                <button type="button" class="btn btn-sm btn-danger btn-remove" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    li.querySelector('.btn-remove').addEventListener('click', () => {
+                        li.remove();
+                        actualizarResumen();
+                    });
+                    li.querySelector('.btn-decrease').addEventListener('click', () => {
+                        const cantidadEl = li.querySelector('.cantidad');
+                        let cantidad = parseInt(cantidadEl.textContent, 10);
+                        if (cantidad > 1) {
+                            cantidadEl.textContent = cantidad - 1;
+                            actualizarResumen();
+                        }
+                    });
+                    li.querySelector('.btn-increase').addEventListener('click', () => {
+                        const cantidadEl = li.querySelector('.cantidad');
+                        cantidadEl.textContent = parseInt(cantidadEl.textContent, 10) + 1;
+                        actualizarResumen();
+                    });
+
+                    listaProductos.appendChild(li);
+                    actualizarResumen();
+                }
+
+                addButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        agregarProducto(this.dataset.id, this.dataset.nombre, parseFloat(this.dataset.precio));
+                    });
+                });
+
+                document.getElementById('formPedido').addEventListener('submit', function (event) {
+                    if (productosJson.value.trim() === '') {
+                        event.preventDefault();
+                        alert('Agrega al menos un producto al pedido antes de guardar.');
+                        return;
+                    }
                 });
             });
         </script>
