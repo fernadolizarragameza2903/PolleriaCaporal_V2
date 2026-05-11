@@ -17,7 +17,6 @@
             </a>
         </div>
 
-        <!-- Tabla de usuarios -->
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -40,11 +39,11 @@
                                 <td th:text="${usuario.nombreCompleto}"></td>
                                 <td th:text="${usuario.email}"></td>
                                 <td>
-                                    <span th:if="${usuario.rol.name() == 'ROLE_ADMIN'}" 
+                                    <span th:if="${usuario.rol != null and usuario.rol.name() == 'ROLE_ADMIN'}"
                                           class="badge bg-danger">
                                         <i class="fas fa-star"></i> Administrador
                                     </span>
-                                    <span th:if="${usuario.rol.name() == 'ROLE_EMPLOYEE'}" 
+                                    <span th:if="${usuario.rol != null and usuario.rol.name() == 'ROLE_EMPLOYEE'}"
                                           class="badge bg-info">
                                         <i class="fas fa-user-tie"></i> Empleado
                                     </span>
@@ -58,17 +57,17 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/usuarios/{id}(id=${usuario.id})}" 
+                                    <a th:href="@{/usuarios/{id}(id=${usuario.id})}"
                                        class="btn btn-sm btn-info" title="Ver">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a th:href="@{/usuarios/editar/{id}(id=${usuario.id})}" 
+                                    <a th:href="@{/usuarios/editar/{id}(id=${usuario.id})}"
                                        class="btn btn-sm btn-warning" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form method="post" 
+                                    <form method="post"
                                           th:action="@{/usuarios/{id}/eliminar(id=${usuario.id})}"
-                                          style="display:inline;" 
+                                          style="display:inline;"
                                           onsubmit="return confirm('¿Está seguro?');">
                                         <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
                                             <i class="fas fa-trash"></i>
@@ -76,7 +75,7 @@
                                     </form>
                                 </td>
                             </tr>
-                            <tr th:if="${usuarios.isEmpty()}">
+                            <tr th:if="${usuarios == null or usuarios.isEmpty()}">
                                 <td colspan="7" class="text-center text-muted py-4">
                                     <i class="fas fa-inbox"></i> No hay usuarios registrados
                                 </td>
@@ -87,67 +86,5 @@
             </div>
         </div>
     </th:block>
-</body>
-</html>
-
-      <a href="productos.html" th:href="@{/productos}" class="menu-item">
-        📦 <span>Gestionar Productos</span>
-      </a>
-
-      <a href="usuarios.html" th:href="@{/usuarios}" class="menu-item active">
-        👥 <span>Usuarios</span>
-      </a>
-
-      <a href="empleados.html" th:href="@{/empleados}" class="menu-item">
-        🍗 <span>Empleados</span>
-      </a>
-
-      <a href="inicio.html" th:href="@{/inicio}" class="menu-item">
-        🚪 <span>Cerrar sesión</span>
-      </a>
-    </div>
-
-    <!-- CONTENIDO -->
-    <div class="col-10 p-4">
-
-      <h2>👥 Gestión de Usuarios</h2>
-
-      <div class="row mb-3">
-        <div class="col">
-          <input type="text" id="usuario" class="form-control" placeholder="Usuario">
-        </div>
-
-        <div class="col">
-          <select id="rol" class="form-control">
-            <option value="admin">Administrador</option>
-            <option value="empleado">Empleado</option>
-          </select>
-        </div>
-
-        <div class="col">
-          <button class="btn btn-success w-100" onclick="agregarUsuario()">
-            + Agregar
-          </button>
-        </div>
-      </div>
-
-      <table class="table table-bordered table-hover shadow-sm">
-        <thead class="table-dark">
-          <tr>
-            <th>Usuario</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="tablaUsuarios"></tbody>
-      </table>
-
-    </div>
-  </div>
-</div>
-
-<script src="js/usuarios.js" th:src="@{/js/usuarios.js}"></script>
-
 </body>
 </html>

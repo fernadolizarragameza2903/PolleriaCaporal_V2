@@ -101,21 +101,11 @@ public class MainController {
         return "redirect:/productos";
     }
 
-    @GetMapping("/usuarios")
-    public String usuarios(Model model) {
-        model.addAttribute("activePage", "usuarios");
-        return "usuarios";
-    }
+    /** Listado CRUD en {@link UsuarioController} (GET {@code /usuarios}). */
 
     @GetMapping("/empleados")
     public String empleados(Model model) {
         model.addAttribute("activePage", "empleados");
         return "empleados";
-    }
-
-    @GetMapping("/inicio")
-    public String inicio(Model model) {
-        model.addAttribute("activePage", "inicio");
-        return "inicio";
     }
 }

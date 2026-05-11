@@ -17,6 +17,9 @@ import java.util.List;
 })
 public class Usuario {
 
+    public interface OnCreate {}
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +29,7 @@ public class Usuario {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @NotBlank(message = "La contraseña es requerida")
+    @NotBlank(message = "La contraseña es requerida", groups = OnCreate.class)
     @Column(nullable = false)
     private String password;
 

@@ -1,21 +1,16 @@
+# Común para todos los entornos
 spring:
   application:
     name: polleria-caporal
   profiles:
+    # Sin PostgreSQL: deja `dev` (usa H2 en carpeta ./data/).
+    # Con PostgreSQL: cambia a `postgres` y arranca cuando el servidor esté en marcha.
     active: dev
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/polleria_caporal
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
-      connection-timeout: 30000
+  threads:
+    virtual:
+      enabled: true
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: false
@@ -36,12 +31,6 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
 
-  security:
-    user:
-      name: admin
-      password: admin123
-      roles: ADMIN
-
 server:
   port: 8080
   servlet:
@@ -51,17 +40,19 @@ server:
 logging:
   level:
     root: INFO
-    com.polleriacaporal: DEBUG
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
+    "[com.polleriacaporal]": DEBUG
+    "[org.hibernate.SQL]": DEBUG
 
 ---
+# Perfil local sin instalar servidor.
+# H2 en MEMORIA evita bloqueos por OneDrive/sincronización en carpetas del Escritorio.
+# Consola H2: misma URL jdbc:h2:mem:polleriacaporal (usuario sa, sin contraseña).
 spring:
   config:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:h2:file:./data/polleria-caporal
+    url: jdbc:h2:mem:polleriacaporal;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -72,3 +63,22 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+---
+# Producción/desarrollo con PostgreSQL (tablas gestionadas por Hibernate con ddl-auto: update arriba)
+spring:
+  config:
+    activate:
+      on-profile: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/polleria_caporal
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,9 +24,9 @@ public class ProductoService {
             return;
         }
 
-        save(new Producto(null, "Pollo a la brasa", "Pollo", new BigDecimal("35.00"), true));
-        save(new Producto(null, "Papas fritas", "Papas", new BigDecimal("12.00"), true));
-        save(new Producto(null, "Gaseosa 500ml", "Bebidas", new BigDecimal("8.00"), false));
+        save(productoEjemplo("Pollo a la brasa", "Pollo", new BigDecimal("35.00"), 40, true));
+        save(productoEjemplo("Papas fritas", "Papas", new BigDecimal("12.00"), 80, true));
+        save(productoEjemplo("Gaseosa 500ml", "Bebidas", new BigDecimal("8.00"), 24, false));
     }
 
     public List<Producto> findAll() {
@@ -33,6 +34,9 @@ public class ProductoService {
     }
 
     public Optional<Producto> findById(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
         return productoRepository.findById(id);
     }
 
@@ -44,6 +48,13 @@ public class ProductoService {
     }
 
     public void deleteById(Long id) {
+        Objects.requireNonNull(id, "id");
         productoRepository.deleteById(id);
+    }
+
+    private static Producto productoEjemplo(String nombre, String categoria, BigDecimal precio, int stock, boolean estado) {
+        Producto p = new Producto(nombre, categoria, precio, stock);
+        p.setEstado(estado);
+        return p;
     }
 }

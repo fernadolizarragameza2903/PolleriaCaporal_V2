@@ -28,8 +28,9 @@
                                     <i class="fas fa-login"></i> Nombre de Usuario *
                                 </label>
                                 <input type="text" class="form-control" id="username" 
-                                       th:field="*{username}" required 
-                                       th:disabled="${editando}">
+                                       th:field="*{username}" required
+                                       th:readonly="${editando}"
+                                       th:classappend="${editando} ? ' bg-light' : ''">
                                 <small class="text-danger" th:if="${#fields.hasErrors('username')}" 
                                        th:errors="*{username}"></small>
                             </div>

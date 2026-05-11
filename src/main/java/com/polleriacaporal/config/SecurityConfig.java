@@ -10,8 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Configuración de Spring Security para la aplicación
- * Define autenticación, autorización y políticas de acceso
+ * Seguridad basada en Spring Security usando los roles ROLE_ADMIN y ROLE_EMPLOYEE
+ * expuestos por {@link com.polleriacaporal.model.RolUsuario}. Los helpers {@code hasRole} resuelven los prefijos ROLE_.
  */
 @Configuration
 @EnableWebSecurity
@@ -63,8 +63,7 @@ public class SecurityConfig {
                 )
                 // Desactivar CSRF para desarrollo (en producción, usar CSRF token)
                 .csrf(csrf -> csrf.disable())
-                // Permitir iframes para H2 console
-                .headers(headers -> headers.frameOptions().disable());
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();
     }

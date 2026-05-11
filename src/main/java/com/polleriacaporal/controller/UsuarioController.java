@@ -3,13 +3,14 @@ package com.polleriacaporal.controller;
 import com.polleriacaporal.model.RolUsuario;
 import com.polleriacaporal.model.Usuario;
 import com.polleriacaporal.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 
 import java.util.Optional;
 
@@ -22,8 +23,11 @@ import java.util.Optional;
 @PreAuthorize("hasRole('ADMIN')")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
+
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     /**
      * Listar todos los usuarios
@@ -51,7 +55,7 @@ public class UsuarioController {
      * Guardar nuevo usuario
      */
     @PostMapping("/guardar")
-    public String guardarUsuario(@Valid @ModelAttribute Usuario usuario,
+    public String guardarUsuario(@Validated({Default.class, Usuario.OnCreate.class}) @ModelAttribute Usuario usuario,
                                 BindingResult result,
                                 Model model) {
         if (result.hasErrors()) {

@@ -3,6 +3,7 @@ package com.polleriacaporal.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class Producto {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
-    @Positive(message = "El stock debe ser mayor o igual a 0")
+    @PositiveOrZero(message = "El stock debe ser mayor o igual a 0")
     @Column(name = "stock", nullable = false)
     private Integer stock = 0;
 

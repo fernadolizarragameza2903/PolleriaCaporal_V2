@@ -3,12 +3,12 @@ package com.polleriacaporal.service;
 import com.polleriacaporal.model.RolUsuario;
 import com.polleriacaporal.model.Usuario;
 import com.polleriacaporal.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -19,11 +19,13 @@ import java.util.Optional;
 @Transactional
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * Obtiene todos los usuarios del sistema
@@ -38,6 +40,9 @@ public class UsuarioService {
      */
     @Transactional(readOnly = true)
     public Optional<Usuario> obtenerPorId(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
         return usuarioRepository.findById(id);
     }
 
@@ -85,10 +90,14 @@ public class UsuarioService {
      * Actualiza un usuario existente
      */
     public Usuario actualizarUsuario(Usuario usuario) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
+        Long id = usuario.getId();
+        if (id == null) {
+            throw new IllegalArgumentException("El usuario a actualizar debe tener ID");
+        }
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
 
         if (usuarioExistente.isEmpty()) {
-            throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuario.getId());
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + id);
         }
 
         Usuario usuarioActualizar = usuarioExistente.get();
@@ -106,6 +115,7 @@ public class UsuarioService {
      * Valida que la nueva contraseña sea diferente
      */
     public void actualizarContrasena(Long usuarioId, String nuevaContrasena) {
+        Objects.requireNonNull(usuarioId, "usuarioId");
         Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
 
         if (usuario.isEmpty()) {
@@ -121,6 +131,7 @@ public class UsuarioService {
      * Activa o desactiva un usuario
      */
     public Usuario cambiarEstado(Long usuarioId, Boolean activo) {
+        Objects.requireNonNull(usuarioId, "usuarioId");
         Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
 
         if (usuario.isEmpty()) {
@@ -137,6 +148,7 @@ public class UsuarioService {
      * Elimina un usuario del sistema
      */
     public void eliminarUsuario(Long usuarioId) {
+        Objects.requireNonNull(usuarioId, "usuarioId");
         Optional<Usuario> usuario = usuarioRepository.findById(usuarioId);
 
         if (usuario.isEmpty()) {
