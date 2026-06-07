@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pollería Caporal - Catálogo de Productos</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-section">
+                <h1>🍗 Pollería Caporal</h1>
+                <p class="tagline">Los mejores pollos a la brasa desde 2024</p>
+            </div>
+            <div class="contact-icons">
+                <a href="https://wa.me/51904472592" class="icon-whatsapp" title="Escribir por WhatsApp">
+                    💬 WhatsApp
+                </a>
+                <a href="tel:+51904472592" class="icon-phone" title="Llamar">
+                    ☎️ Llamar
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- FILTROS -->
+    <section class="filters">
+        <div class="container">
+            <h2>Categorías</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="todos">Todos</button>
+                <button class="filter-btn" data-category="Pollos">Pollos</button>
+                <button class="filter-btn" data-category="Combos">Combos</button>
+                <button class="filter-btn" data-category="Acompañamientos">Acompañamientos</button>
+                <button class="filter-btn" data-category="Chifa">Chifa</button>
+                <button class="filter-btn" data-category="Bebidas">Bebidas</button>
+                <button class="filter-btn" data-category="Postres">Postres</button>
+            </div>
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar producto...">
+        </div>
+    </section>
+
+    <!-- CATÁLOGO DE PRODUCTOS -->
+    <section class="catalog">
+        <div class="container">
+            <div id="productosContainer" class="products-grid">
+                <!-- Los productos se cargan aquí con JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CARRITO FLOTANTE -->
+    <div id="carrito" class="carrito-flotante">
+        <div class="carrito-header">
+            <h3>🛒 Mi Pedido</h3>
+            <span id="carritoCount" class="carrito-count">0</span>
+        </div>
+        <div id="carritoItems" class="carrito-items">
+            <p class="empty-message">Tu carrito está vacío</p>
+        </div>
+        <div class="carrito-footer">
+            <div class="total">
+                <strong>Total:</strong>
+                <span id="carritoTotal">S/. 0.00</span>
+            </div>
+            <button id="btnPedirWhatsApp" class="btn-whatsapp" onclick="enviarPedidoWhatsApp()">
+                Pedir por WhatsApp
+            </button>
+            <button id="btnLlamar" class="btn-phone" onclick="llamar()">
+                Llamar
+            </button>
+            <button id="btnLimpiar" class="btn-clear" onclick="limpiarCarrito()">
+                Limpiar
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE DATOS Y LÓGICA -->
+    <script>
+        // BASE DE DATOS DE PRODUCTOS
+        const productos = [
+            // POLLOS
+            { id: 1, nombre: "Pollo a la brasa (1/2 kg)", precio: 25.00, categoria: "Pollos", emoji: "🍗" },
+            { id: 2, nombre: "Pollo a la brasa (1 kg)", precio: 45.00, categoria: "Pollos", emoji: "🍗" },
+            { id: 3, nombre: "Pollo a la brasa entero + papas + ensalada", precio: 65.00, categoria: "Pollos", emoji: "🍗" },
+            { id: 4, nombre: "1/4 de pollo a la brasa", precio: 18.00, categoria: "Pollos", emoji: "🍗" },
+            { id: 5, nombre: "1/2 pollo a la brasa + gaseosa 1.5 L", precio: 35.00, categoria: "Pollos", emoji: "🍗" },
+            
+            // COMBOS
+            { id: 6, nombre: "Combo personal (1/4 pollo + papas + bebida)", precio: 22.00, categoria: "Combos", emoji: "🎁" },
+            { id: 7, nombre: "Combo pareja (1/2 pollo + papas + 2 bebidas)", precio: 45.00, categoria: "Combos", emoji: "🎁" },
+            { id: 8, nombre: "Combo familiar", precio: 120.00, categoria: "Combos", emoji: "🎁" },
+            { id: 9, nombre: "Mega combo familiar (2 pollos + papas + ensalada + gaseosa 3 L)", precio: 150.00, categoria: "Combos", emoji: "🎁" },
+            
+            // ACOMPAÑAMIENTOS
+            { id: 10, nombre: "Papas a la huancaína", precio: 15.00, categoria: "Acompañamientos", emoji: "🥔" },
+            { id: 11, nombre: "Ensalada fresca", precio: 10.00, categoria: "Acompañamientos", emoji: "🥗" },
+            { id: 12, nombre: "Porción de papas fritas", precio: 12.00, categoria: "Acompañamientos", emoji: "🍟" },
+            { id: 13, nombre: "Arroz chaufa simple", precio: 14.00, categoria: "Acompañamientos", emoji: "🍚" },
+            { id: 14, nombre: "Wantán frito (8 unidades)", precio: 12.00, categoria: "Acompañamientos", emoji: "🥟" },
+            { id: 15, nombre: "Tequeños de pollo (6 unidades)", precio: 15.00, categoria: "Acompañamientos", emoji: "🥞" },
+            
+            // CHIFA
+            { id: 16, nombre: "Arroz chaufa de pollo", precio: 22.00, categoria: "Chifa", emoji: "🍚" },
+            { id: 17, nombre: "Arroz chaufa especial", precio: 28.00, categoria: "Chifa", emoji: "🍚" },
+            { id: 18, nombre: "Tallarín saltado de pollo", precio: 24.00, categoria: "Chifa", emoji: "🍜" },
+            { id: 19, nombre: "Tallarín saltado especial", precio: 30.00, categoria: "Chifa", emoji: "🍜" },
+            { id: 20, nombre: "Aeropuerto de pollo", precio: 26.00, categoria: "Chifa", emoji: "🍚" },
+            { id: 21, nombre: "Aeropuerto especial", precio: 32.00, categoria: "Chifa", emoji: "🍚" },
+            { id: 22, nombre: "Kam Lu Wantán", precio: 35.00, categoria: "Chifa", emoji: "🥟" },
+            { id: 23, nombre: "Pollo Chi Jau Kay", precio: 28.00, categoria: "Chifa", emoji: "🍚" },
+            { id: 24, nombre: "Pollo con verduras orientales", precio: 26.00, categoria: "Chifa", emoji: "🥘" },
+            { id: 25, nombre: "Chancho agridulce", precio: 30.00, categoria: "Chifa", emoji: "🍖" },
+            { id: 26, nombre: "Sopa Wantán", precio: 18.00, categoria: "Chifa", emoji: "🍲" },
+            { id: 27, nombre: "Sopa Fuchifu", precio: 20.00, categoria: "Chifa", emoji: "🍲" },
+            
+            // BEBIDAS
+            { id: 28, nombre: "Chicha morada", precio: 5.00, categoria: "Bebidas", emoji: "🥤" },
+            { id: 29, nombre: "Maracuyá", precio: 5.00, categoria: "Bebidas", emoji: "🥤" },
+            { id: 30, nombre: "Limonada", precio: 5.00, categoria: "Bebidas", emoji: "🥤" },
+            { id: 31, nombre: "Gaseosa personal", precio: 4.00, categoria: "Bebidas", emoji: "🥃" },
+            { id: 32, nombre: "Gaseosa 1.5 L", precio: 8.00, categoria: "Bebidas", emoji: "🥃" },
+            { id: 33, nombre: "Gaseosa 3 L", precio: 12.00, categoria: "Bebidas", emoji: "🥃" },
+            { id: 34, nombre: "Agua mineral", precio: 3.00, categoria: "Bebidas", emoji: "💧" },
+            
+            // POSTRES
+            { id: 35, nombre: "Flan casero", precio: 8.00, categoria: "Postres", emoji: "🍮" },
+            { id: 36, nombre: "Mazamorra morada", precio: 7.00, categoria: "Postres", emoji: "🍲" },
+            { id: 37, nombre: "Arroz con leche", precio: 7.00, categoria: "Postres", emoji: "🍚" },
+            { id: 38, nombre: "Helado de vainilla", precio: 6.00, categoria: "Postres", emoji: "🍦" }
+        ];
+
+        // CARRITO
+        let carrito = [];
+        const WHATSAPP = "51904472592";
+        const TELEFONO = "+51904472592";
+
+        // RENDERIZAR PRODUCTOS
+        function renderizarProductos(productosAMostrar = productos) {
+            const container = document.getElementById('productosContainer');
+            container.innerHTML = '';
+
+            if (productosAMostrar.length === 0) {
+                container.innerHTML = '<p class="no-results">No se encontraron productos 😢</p>';
+                return;
+            }
+
+            productosAMostrar.forEach(producto => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-emoji">${producto.emoji}</div>
+                    <h3>${producto.nombre}</h3>
+                    <p class="product-price">S/. ${producto.precio.toFixed(2)}</p>
+                    <p class="product-category">${producto.categoria}</p>
+                    <button class="btn-add" onclick="agregarAlCarrito(${producto.id})">
+                        Agregar al pedido
+                    </button>
+                `;
+                container.appendChild(productCard);
+            });
+        }
+
+        // AGREGAR AL CARRITO
+        function agregarAlCarrito(productId) {
+            const producto = productos.find(p => p.id === productId);
+            const itemExistente = carrito.find(item => item.id === productId);
+
+            if (itemExistente) {
+                itemExistente.cantidad++;
+            } else {
+                carrito.push({ ...producto, cantidad: 1 });
+            }
+
+            actualizarCarrito();
+        }
+
+        // ACTUALIZAR CARRITO
+        function actualizarCarrito() {
+            const carritoItemsDiv = document.getElementById('carritoItems');
+            const carritoCountSpan = document.getElementById('carritoCount');
+            const carritoTotalSpan = document.getElementById('carritoTotal');
+
+            if (carrito.length === 0) {
+                carritoItemsDiv.innerHTML = '<p class="empty-message">Tu carrito está vacío</p>';
+                carritoCountSpan.textContent = '0';
+                carritoTotalSpan.textContent = 'S/. 0.00';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+            let cantidadTotal = 0;
+
+            carrito.forEach(item => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                cantidadTotal += item.cantidad;
+
+                html += `
+                    <div class="carrito-item">
+                        <div class="item-info">
+                            <p><strong>${item.nombre}</strong></p>
+                            <p class="item-price">S/. ${item.precio.toFixed(2)} x ${item.cantidad}</p>
+                        </div>
+                        <div class="item-controls">
+                            <button onclick="disminuirCantidad(${item.id})" class="btn-qty">-</button>
+                            <span>${item.cantidad}</span>
+                            <button onclick="aumentarCantidad(${item.id})" class="btn-qty">+</button>
+                            <button onclick="eliminarDelCarrito(${item.id})" class="btn-remove">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            carritoItemsDiv.innerHTML = html;
+            carritoCountSpan.textContent = cantidadTotal;
+            carritoTotalSpan.textContent = `S/. ${total.toFixed(2)}`;
+        }
+
+        // AUMENTAR CANTIDAD
+        function aumentarCantidad(productId) {
+            const item = carrito.find(i => i.id === productId);
+            if (item) {
+                item.cantidad++;
+                actualizarCarrito();
+            }
+        }
+
+        // DISMINUIR CANTIDAD
+        function disminuirCantidad(productId) {
+            const item = carrito.find(i => i.id === productId);
+            if (item && item.cantidad > 1) {
+                item.cantidad--;
+                actualizarCarrito();
+            }
+        }
+
+        // ELIMINAR DEL CARRITO
+        function eliminarDelCarrito(productId) {
+            carrito = carrito.filter(item => item.id !== productId);
+            actualizarCarrito();
+        }
+
+        // LIMPIAR CARRITO
+        function limpiarCarrito() {
+            if (carrito.length === 0) {
+                alert('El carrito ya está vacío');
+                return;
+            }
+            if (confirm('¿Estás seguro de que quieres limpiar todo el carrito?')) {
+                carrito = [];
+                actualizarCarrito();
+            }
+        }
+
+        // ENVIAR PEDIDO POR WHATSAPP
+        function enviarPedidoWhatsApp() {
+            if (carrito.length === 0) {
+                alert('Tu carrito está vacío. Agrega productos primero.');
+                return;
+            }
+
+            let mensaje = "🍗 *PEDIDO POLLERÍA CAPORAL* 🍗\n\n";
+            let total = 0;
+
+            carrito.forEach(item => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                mensaje += `${item.emoji} ${item.nombre}\n`;
+                mensaje += `   Cantidad: ${item.cantidad} x S/. ${item.precio.toFixed(2)} = S/. ${subtotal.toFixed(2)}\n\n`;
+            });
+
+            mensaje += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            mensaje += `💰 *TOTAL: S/. ${total.toFixed(2)}*\n`;
+            mensaje += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            mensaje += `Por favor, confirmar disponibilidad y método de entrega.`;
+
+            const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        // LLAMAR
+        function llamar() {
+            if (carrito.length === 0) {
+                alert('Tu carrito está vacío. Agrega productos primero.');
+                return;
+            }
+            window.location.href = `tel:${TELEFONO}`;
+        }
+
+        // FILTRAR POR CATEGORÍA
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const categoria = btn.getAttribute('data-category');
+                if (categoria === 'todos') {
+                    renderizarProductos(productos);
+                } else {
+                    const filtrados = productos.filter(p => p.categoria === categoria);
+                    renderizarProductos(filtrados);
+                }
+            });
+        });
+
+        // BUSCAR PRODUCTOS
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            const busqueda = e.target.value.toLowerCase();
+            const filtrados = productos.filter(p => 
+                p.nombre.toLowerCase().includes(busqueda) ||
+                p.categoria.toLowerCase().includes(busqueda)
+            );
+            renderizarProductos(filtrados);
+        });
+
+        // INICIALIZAR
+        renderizarProductos();
+    </script>
+</body>
+</html>
