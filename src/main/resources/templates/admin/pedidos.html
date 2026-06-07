@@ -4,61 +4,420 @@
       layout:decorate="~{layout}"
       lang="es">
 <head>
-    <title>Todos los Pedidos - Pollería Caporal</title>
+    <title>Todos los Pedidos - Polleria Caporal</title>
 </head>
 <body>
-    <th:block layout:fragment="content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="fas fa-list"></i> Todos los Pedidos
-            </h2>
-        </div>
+<th:block layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-list"></i> Todos los Pedidos
+        </h2>
+    </div>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Cliente</th>
-                                <th>Teléfono</th>
-                                <th>Fecha</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th>Usuario</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${#lists.isEmpty(pedidos)}">
-                                <td colspan="8" class="text-center text-muted py-4">
-                                    <i class="fas fa-inbox"></i> No hay pedidos registrados
-                                </td>
-                            </tr>
-                            <tr th:each="pedido : ${pedidos}">
-                                <td th:text="${pedido.id}"></td>
-                                <td th:text="${pedido.clienteNombre}"></td>
-                                <td th:text="${pedido.clienteTelefono}"></td>
-                                <td th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></td>
-                                <td th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total,1,2)}"></td>
-                                <td>
-                                    <span th:class="${pedido.estado.name() == 'PENDIENTE'} ? 'badge bg-warning' : 
-                                                     ${pedido.estado.name() == 'COMPLETADO'} ? 'badge bg-success' : 'badge bg-secondary'"
-                                          th:text="${pedido.estado.name()}"></span>
-                                </td>
-                                <td th:text="${pedido.usuario.username}"></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Telefono</th>
+                        <th>Mesa / direccion</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Usuario</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(pedidos)}">
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox"></i> No hay pedidos registrados
+                        </td>
+                    </tr>
+                    <tr th:each="pedido : ${pedidos}">
+                        <td th:text="${pedido.id}">1</td>
+                        <td th:text="${pedido.clienteNombre}">Cliente</td>
+                        <td th:text="${pedido.clienteTelefono ?: '-'}">999999999</td>
+                        <td th:text="${pedido.clienteDireccion ?: '-'}">Mesa 1</td>
+                        <td th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">10/05/2025 14:30</td>
+                        <td th:text="${'S/ ' + #numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}">S/ 0.00</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${pedido.estado.name() == 'PENDIENTE' ? ' bg-warning text-dark' : (pedido.estado.name() == 'RECIBIDO' ? ' bg-info text-dark' : (pedido.estado.name() == 'COMPLETO' ? ' bg-success' : ' bg-danger'))}"
+                                  th:text="${pedido.estado.name()}">PENDIENTE</span>
+                        </td>
+                        <td th:text="${pedido.usuario != null ? pedido.usuario.username : '-'}">usuario</td>
+                        <td class="text-nowrap">
+                            <button type="button" class="btn btn-sm btn-light js-ver-pedido" title="Ver detalles"
+                                    th:attr="data-pedido-id=${pedido.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary ms-1 js-editar-pedido" title="Editar"
+                                    th:attr="data-pedido-id=${pedido.id}">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <a class="btn btn-sm btn-secondary ms-1" title="Imprimir" target="_blank"
+                               th:href="@{'/empleados/pedidos/' + ${pedido.id} + '/imprimir'}">
+                                <i class="fas fa-print"></i>
+                            </a>
+                            <a class="btn btn-sm btn-danger ms-1" title="PDF" target="_blank"
+                               th:href="@{'/empleados/pedidos/' + ${pedido.id} + '/pdf'}">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger ms-1 js-eliminar-pedido" title="Eliminar"
+                                    th:attr="data-pedido-id=${pedido.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalVerPedido" tabindex="-1" aria-labelledby="modalVerPedidoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalVerPedidoLabel">Detalle del pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="modalVerPedidoBody"></div>
+                <div class="modal-footer">
+                    <a href="#" id="modalVerImprimir" class="btn btn-secondary" target="_blank">
+                        <i class="fas fa-print"></i> Imprimir
+                    </a>
+                    <a href="#" id="modalVerPdf" class="btn btn-danger" target="_blank">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
-    </th:block>
+    </div>
+
+    <div class="modal fade" id="modalEditarPedido" tabindex="-1" aria-labelledby="modalEditarPedidoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarPedidoLabel">Editar pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editPedidoId">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="editClienteNombre">Cliente</label>
+                            <input type="text" class="form-control" id="editClienteNombre">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="editClienteTelefono">Telefono</label>
+                            <input type="text" class="form-control" id="editClienteTelefono">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label" for="editClienteDireccion">Mesa / direccion</label>
+                            <input type="text" class="form-control" id="editClienteDireccion">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="editEstado">Estado</label>
+                            <select class="form-select" id="editEstado">
+                                <option th:each="estado : ${estados}"
+                                        th:value="${estado.name()}"
+                                        th:text="${estado.name()}">PENDIENTE</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="editNota">Nota</label>
+                            <textarea class="form-control" id="editNota" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3 border-top pt-3">
+                        <div class="col-md-8">
+                            <label class="form-label" for="editProductoId">Agregar producto</label>
+                            <select class="form-select" id="editProductoId">
+                                <option value="">Sin producto nuevo</option>
+                                <option th:each="producto : ${productos}"
+                                        th:value="${producto.id}"
+                                        th:text="${producto.nombre + ' - S/ ' + #numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}">
+                                    Producto
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="editCantidad">Cantidad</label>
+                            <input type="number" class="form-control" id="editCantidad" min="1" value="1">
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <h6 class="mb-3">Productos actuales</h6>
+                        <div id="modalEditarResumen"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarPedido">
+                        <i class="fas fa-save"></i> Guardar cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="extra-js">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.js-ver-pedido').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    verDetallesPedido(button.dataset.pedidoId);
+                });
+            });
+
+            document.querySelectorAll('.js-editar-pedido').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    editarPedido(button.dataset.pedidoId);
+                });
+            });
+
+            document.querySelectorAll('.js-eliminar-pedido').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    eliminarPedido(button.dataset.pedidoId);
+                });
+            });
+
+            document.getElementById('btnGuardarPedido').addEventListener('click', guardarCambiosPedido);
+        });
+
+        function moneda(valor) {
+            return 'S/ ' + Number(valor || 0).toFixed(2);
+        }
+
+        function texto(valor) {
+            return valor || '-';
+        }
+
+        function fecha(valor) {
+            if (!valor) {
+                return '-';
+            }
+            return new Date(valor).toLocaleString('es-PE', {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            });
+        }
+
+        function escapeHtml(valor) {
+            const div = document.createElement('div');
+            div.textContent = valor || '';
+            return div.innerHTML;
+        }
+
+        function estadoBadge(estado) {
+            const clases = {
+                PENDIENTE: 'bg-warning text-dark',
+                RECIBIDO: 'bg-info text-dark',
+                COMPLETO: 'bg-success',
+                CANCELADO: 'bg-danger'
+            };
+            return `<span class="badge ${clases[estado] || 'bg-secondary'}">${estado}</span>`;
+        }
+
+        function productosTabla(detalles, editable) {
+            if (!detalles || detalles.length === 0) {
+                return '<p class="text-muted mb-0">No hay productos en este pedido.</p>';
+            }
+
+            const filas = detalles.map(function (detalle) {
+                const accion = editable ? `
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger" title="Quitar"
+                                onclick="eliminarDetallePedido(${detalle.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>` : '';
+
+                return `
+                    <tr>
+                        <td>${escapeHtml(detalle.producto && detalle.producto.nombre)}</td>
+                        <td class="text-center">${detalle.cantidad}</td>
+                        <td class="text-end">${moneda(detalle.precioUnitario)}</td>
+                        <td class="text-end">${moneda(detalle.subtotal)}</td>
+                        ${accion}
+                    </tr>`;
+            }).join('');
+
+            return `
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-end">Precio unit.</th>
+                            <th class="text-end">Subtotal</th>
+                            ${editable ? '<th class="text-end">Accion</th>' : ''}
+                        </tr>
+                        </thead>
+                        <tbody>${filas}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        function cargarPedido(pedidoId) {
+            return fetch(`/pedidos/api/${pedidoId}`).then(function (response) {
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el pedido');
+                }
+                return response.json();
+            });
+        }
+
+        function verDetallesPedido(pedidoId) {
+            cargarPedido(pedidoId).then(function (pedido) {
+                document.getElementById('modalVerImprimir').href = `/empleados/pedidos/${pedido.id}/imprimir`;
+                document.getElementById('modalVerPdf').href = `/empleados/pedidos/${pedido.id}/pdf`;
+                document.getElementById('modalVerPedidoBody').innerHTML = `
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Pedido:</strong> #${pedido.id}</p>
+                            <p class="mb-1"><strong>Cliente:</strong> ${escapeHtml(texto(pedido.clienteNombre))}</p>
+                            <p class="mb-1"><strong>Telefono:</strong> ${escapeHtml(texto(pedido.clienteTelefono))}</p>
+                            <p class="mb-1"><strong>Mesa / direccion:</strong> ${escapeHtml(texto(pedido.clienteDireccion))}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Fecha:</strong> ${fecha(pedido.fechaPedido)}</p>
+                            <p class="mb-1"><strong>Atendido por:</strong> ${escapeHtml(texto(pedido.usuario && pedido.usuario.username))}</p>
+                            <p class="mb-1"><strong>Estado:</strong> ${estadoBadge(pedido.estado)}</p>
+                            <p class="mb-1"><strong>Nota:</strong> ${escapeHtml(texto(pedido.nota))}</p>
+                        </div>
+                    </div>
+                    ${productosTabla(pedido.detalles, false)}
+                    <div class="text-end mt-3">
+                        <p class="mb-1"><strong>Subtotal:</strong> ${moneda(pedido.subtotal)}</p>
+                        <p class="mb-1"><strong>IGV (18%):</strong> ${moneda(pedido.igv)}</p>
+                        <h5><strong>Total:</strong> ${moneda(pedido.total)}</h5>
+                    </div>`;
+
+                new bootstrap.Modal(document.getElementById('modalVerPedido')).show();
+            }).catch(function (error) {
+                alert(error.message);
+            });
+        }
+
+        function editarPedido(pedidoId) {
+            cargarPedido(pedidoId).then(function (pedido) {
+                document.getElementById('editPedidoId').value = pedido.id;
+                document.getElementById('editClienteNombre').value = pedido.clienteNombre || '';
+                document.getElementById('editClienteTelefono').value = pedido.clienteTelefono || '';
+                document.getElementById('editClienteDireccion').value = pedido.clienteDireccion || '';
+                document.getElementById('editEstado').value = pedido.estado;
+                document.getElementById('editNota').value = pedido.nota || '';
+                document.getElementById('editProductoId').value = '';
+                document.getElementById('editCantidad').value = 1;
+                document.getElementById('modalEditarResumen').innerHTML = productosTabla(pedido.detalles, true);
+                new bootstrap.Modal(document.getElementById('modalEditarPedido')).show();
+            }).catch(function (error) {
+                alert(error.message);
+            });
+        }
+
+        function guardarCambiosPedido() {
+            const pedidoId = document.getElementById('editPedidoId').value;
+            const productoId = document.getElementById('editProductoId').value;
+            const cantidad = Number(document.getElementById('editCantidad').value || 1);
+            const payload = {
+                clienteNombre: document.getElementById('editClienteNombre').value,
+                clienteTelefono: document.getElementById('editClienteTelefono').value,
+                clienteDireccion: document.getElementById('editClienteDireccion').value,
+                estado: document.getElementById('editEstado').value,
+                nota: document.getElementById('editNota').value
+            };
+
+            if (productoId) {
+                payload.productoId = Number(productoId);
+                payload.cantidad = cantidad;
+            }
+
+            fetch(`/pedidos/api/${pedidoId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('No se pudo guardar el pedido');
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (!data.success) {
+                        throw new Error(data.message || 'No se pudo guardar el pedido');
+                    }
+                    location.reload();
+                })
+                .catch(function (error) {
+                    alert(error.message);
+                });
+        }
+
+        function eliminarPedido(pedidoId) {
+            if (!pedidoId || !confirm('Eliminar este pedido? Se marcara como CANCELADO.')) {
+                return;
+            }
+
+            fetch(`/pedidos/api/${pedidoId}`, {
+                method: 'DELETE'
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('No se pudo eliminar el pedido');
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (!data.success) {
+                        throw new Error(data.message || 'No se pudo eliminar el pedido');
+                    }
+                    location.reload();
+                })
+                .catch(function (error) {
+                    alert(error.message);
+                });
+        }
+
+        function eliminarDetallePedido(detalleId) {
+            const pedidoId = document.getElementById('editPedidoId').value;
+            if (!pedidoId || !confirm('Eliminar este producto del pedido?')) {
+                return;
+            }
+
+            fetch(`/pedidos/api/${pedidoId}/detalles/${detalleId}`, {
+                method: 'DELETE'
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('No se pudo eliminar el producto');
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (!data.success) {
+                        throw new Error(data.message || 'No se pudo eliminar el producto');
+                    }
+                    return editarPedido(pedidoId);
+                })
+                .catch(function (error) {
+                    alert(error.message);
+                });
+        }
+    </script>
+</th:block>
 </body>
 </html>

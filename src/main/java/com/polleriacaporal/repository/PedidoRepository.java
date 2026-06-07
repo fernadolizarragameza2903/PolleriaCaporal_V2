@@ -22,4 +22,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByFechaPedidoBetween(LocalDateTime inicio, LocalDateTime fin);
     Page<Pedido> findByUsuario(Usuario usuario, Pageable pageable);
     Page<Pedido> findByEstado(EstadoVenta estado, Pageable pageable);
+
+    // Búsqueda por id de usuario para facilitar filtrado sin cargar la entidad Usuario
+    List<Pedido> findByUsuarioId(Long usuarioId);
+    Page<Pedido> findByUsuarioId(Long usuarioId, Pageable pageable);
 }

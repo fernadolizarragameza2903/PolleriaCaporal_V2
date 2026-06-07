@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Detalle pedido</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" />
+    <style>
+        .table { width:100%; border-collapse: collapse; }
+        .table th, .table td { border: 1px solid #ddd; padding:8px; }
+    </style>
+</head>
+<body>
+<h2>Detalle Pedido - Boleta #: <span th:text="${pedido.id}"></span></h2>
+<p>Cliente: <strong th:text="${pedido.clienteNombre}"></strong></p>
+<p>Teléfono: <span th:text="${pedido.clienteTelefono}"></span> Dirección: <span th:text="${pedido.clienteDireccion}"></span></p>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio unitario</th>
+        <th>Subtotal</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="d : ${pedido.detalles}">
+        <td th:text="${d.producto.nombre}"></td>
+        <td th:text="${d.cantidad}"></td>
+        <td th:text="${#numbers.formatDecimal(d.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
+        <td th:text="${#numbers.formatDecimal(d.subtotal, 1, 'COMMA', 2, 'POINT')}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+    <p>Subtotal: <strong th:text="${#numbers.formatDecimal(pedido.subtotal, 1, 'COMMA', 2, 'POINT')}"></strong></p>
+    <p>IGV (18%): <strong th:text="${#numbers.formatDecimal(pedido.igv, 1, 'COMMA', 2, 'POINT')}"></strong></p>
+    <p>Total: <strong th:text="${#numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}"></strong></p>
+</div>
+
+<div>
+    <a th:href="@{'/empleados/pedidos/' + ${pedido.id} + '/imprimir'}" target="_blank">Imprimir boleta</a> |
+    <a th:href="@{'/empleados/pedidos/' + ${pedido.id} + '/editar'}">Editar pedido</a> |
+    <a th:href="@{/empleados/pedidos}">Volver</a>
+</div>
+</body>
+</html>

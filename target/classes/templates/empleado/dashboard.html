@@ -103,7 +103,7 @@
                                     <p class="mb-1 fw-bold" th:text="${pedido.clienteNombre}">Cliente</p>
                                     <small class="text-muted" th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">Fecha</small>
                                 </div>
-                                <strong class="text-success" th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total,1,2)}">S/ 0.00</strong>
+                                <strong class="text-success" th:text="${'S/ ' + #numbers.formatDecimal(pedido.total,1,2)}">S/ 0.00</strong>
                             </li>
                         </ul>
                     </div>
@@ -121,11 +121,11 @@
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span>Monto Total:</span>
-                            <strong th:text="'S/ ' + ${#numbers.formatDecimal(montoTotal,1,2)}">S/ 0.00</strong>
+                            <strong th:text="${'S/ ' + #numbers.formatDecimal(montoTotal,1,2)}">S/ 0.00</strong>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span>Promedio por Pedido:</span>
-                            <strong th:text="'S/ ' + ${#numbers.formatDecimal(ventaPromedio,1,2)}">S/ 0.00</strong>
+                            <strong th:text="${'S/ ' + #numbers.formatDecimal(ventaPromedio,1,2)}">S/ 0.00</strong>
                         </div>
                     </div>
                 </div>

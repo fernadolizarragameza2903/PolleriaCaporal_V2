@@ -158,6 +158,14 @@ public class Producto {
         this.detallesPedidos = detallesPedidos;
     }
 
+    @Transient
+    public java.math.BigDecimal getPrecioConIgv() {
+        if (precio == null) {
+            return java.math.BigDecimal.ZERO;
+        }
+        return precio.multiply(new java.math.BigDecimal("1.18")).setScale(2, java.math.RoundingMode.HALF_UP);
+    }
+
     @Override
     public String toString() {
         return "Producto{" +

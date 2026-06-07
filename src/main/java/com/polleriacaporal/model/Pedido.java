@@ -1,7 +1,7 @@
 package com.polleriacaporal.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,14 +31,14 @@ public class Pedido {
     @Column(name = "cliente_direccion")
     private String clienteDireccion;
 
-    @Positive(message = "El subtotal debe ser mayor a 0")
+    @PositiveOrZero(message = "El subtotal no puede ser negativo")
     @Column(name = "subtotal", nullable = false, precision = 12, scale = 2)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
     @Column(name = "igv", nullable = false, precision = 12, scale = 2)
     private BigDecimal igv = BigDecimal.ZERO;
 
-    @Positive(message = "El total debe ser mayor a 0")
+    @PositiveOrZero(message = "El total no puede ser negativo")
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
 
@@ -91,11 +91,25 @@ public class Pedido {
 
     // Métodos de negocio
     public void calcularTotal() {
-        this.subtotal = detalles.stream()
+        // Here detalles store subtotal values that already include IGV (precioUnitario is IGV-included).
+        java.math.BigDecimal totalConIgv = detalles.stream()
                 .map(DetallePedido::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        this.igv = this.subtotal.multiply(new BigDecimal("0.18"));
-        this.total = this.subtotal.add(this.igv);
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, java.math.RoundingMode.HALF_UP);
+
+        if (totalConIgv.compareTo(BigDecimal.ZERO) == 0) {
+            this.subtotal = BigDecimal.ZERO.setScale(2, java.math.RoundingMode.HALF_UP);
+            this.igv = BigDecimal.ZERO.setScale(2, java.math.RoundingMode.HALF_UP);
+            this.total = BigDecimal.ZERO.setScale(2, java.math.RoundingMode.HALF_UP);
+            return;
+        }
+
+        java.math.BigDecimal subtotalSinIgv = totalConIgv.divide(new BigDecimal("1.18"), 2, java.math.RoundingMode.HALF_UP);
+        java.math.BigDecimal igvCalc = totalConIgv.subtract(subtotalSinIgv).setScale(2, java.math.RoundingMode.HALF_UP);
+
+        this.subtotal = subtotalSinIgv;
+        this.igv = igvCalc;
+        this.total = totalConIgv;
     }
 
     public void agregarDetalle(DetallePedido detalle) {

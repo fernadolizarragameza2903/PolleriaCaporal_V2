@@ -5,6 +5,7 @@ C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacapor
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\controller\AdminController.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\controller\EmpleadoController.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\controller\MainController.java
+C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\controller\PedidoController.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\controller\UsuarioController.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\model\DetallePedido.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\model\Empleado.java
@@ -23,6 +24,7 @@ C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacapor
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\repository\ReporteRepository.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\repository\UsuarioRepository.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\repository\VentaRepository.java
+C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\service\PedidoPdfService.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\service\PedidoService.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\service\ProductoService.java
 C:\Users\ferna\OneDrive\Desktop\Polleria_Caporal\src\main\java\com\polleriacaporal\service\UsuarioService.java

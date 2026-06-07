@@ -35,7 +35,8 @@ public class SecurityConfig {
                         // Rutas del Admin
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/usuarios/**").hasRole("ADMIN")
-                        .requestMatchers("/productos/**").hasRole("ADMIN")
+                        // Permitir gestión básica de productos también a empleados (actualizar stock, ver catálogo)
+                        .requestMatchers("/productos/**").hasAnyRole("ADMIN", "EMPLOYEE")
                         .requestMatchers("/reportes/**").hasRole("ADMIN")
                         
                         // Rutas del Empleado

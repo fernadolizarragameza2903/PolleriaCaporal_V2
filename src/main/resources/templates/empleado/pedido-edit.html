@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Editar pedido</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" />
+    <style>.table { width:100%; border-collapse: collapse; } .table th, .table td { border:1px solid #ddd; padding:8px; }</style>
+</head>
+<body>
+<h2>Editar Pedido #: <span th:text="${pedido.id}"></span></h2>
+<form th:action="@{'/empleados/pedidos/' + ${pedido.id} + '/editar'}" method="post">
+    <label>Cliente nombre: <input type="text" name="clienteNombre" th:value="${pedido.clienteNombre}"/></label><br/>
+    <label>Teléfono: <input type="text" name="clienteTelefono" th:value="${pedido.clienteTelefono}"/></label><br/>
+    <label>Dirección: <input type="text" name="clienteDireccion" th:value="${pedido.clienteDireccion}"/></label><br/>
+    <label>Nota: <textarea name="nota" th:text="${pedido.nota}"></textarea></label>
+
+    <h3>Detalles</h3>
+    <table class="table">
+        <thead>
+        <tr><th>Producto</th><th>Precio</th><th>Cantidad</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${productos}">
+            <td th:text="${p.nombre}"></td>
+            <td th:text="${p.precio}"></td>
+            <td>
+                <input type="number" min="0" value="0" th:id="${'qty-' + p.id}"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <input type="hidden" name="productosJson" id="productosJson" />
+    <button type="submit" onclick="buildProductosJson()">Guardar cambios</button>
+    <a th:href="@{/empleados/pedidos}">Cancelar</a>
+</form>
+
+<script>
+    // Construye productosJson en formato id:cantidad,id:cantidad
+    function buildProductosJson() {
+        let entries = [];
+        /*[[${productos}]]*/
+        let products = /*[[${productos}]]*/ [];
+        // Fallback: recorrer inputs por data
+        document.querySelectorAll('input[type=number][id^="qty-"]').forEach(function(inp){
+            const id = inp.id.replace('qty-','');
+            const qty = parseInt(inp.value) || 0;
+            if (qty > 0) entries.push(id + ':' + qty);
+        });
+        document.getElementById('productosJson').value = entries.join(',');
+    }
+</script>
+</body>
+</html>

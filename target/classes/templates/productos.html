@@ -45,7 +45,7 @@
                             <tr th:each="producto : ${productos}">
                                 <td th:text="${producto.nombre}">Nombre</td>
                                 <td th:text="${producto.categoria}">Categoría</td>
-                                <td th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio,1,2)}">S/ 0.00</td>
+                                <td th:text="${'S/ ' + #numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}">S/ 0.00</td>
                                 <td>
                                     <span th:class="${producto.estado} ? 'badge bg-success' : 'badge bg-secondary'"
                                           th:text="${producto.estado} ? 'Activo' : 'Inactivo'">Activo</span>

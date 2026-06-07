@@ -40,7 +40,7 @@ public class DetallePedido {
     @PrePersist
     protected void onCreate() {
         if (subtotal == null && precioUnitario != null && cantidad != null) {
-            subtotal = precioUnitario.multiply(new BigDecimal(cantidad));
+            subtotal = precioUnitario.multiply(new BigDecimal(cantidad)).setScale(2, java.math.RoundingMode.HALF_UP);
         }
     }
 
@@ -53,13 +53,13 @@ public class DetallePedido {
         this.producto = producto;
         this.cantidad = cantidad;
         this.precioUnitario = producto.getPrecio();
-        this.subtotal = this.precioUnitario.multiply(new BigDecimal(cantidad));
+        this.subtotal = this.precioUnitario.multiply(new BigDecimal(cantidad)).setScale(2, java.math.RoundingMode.HALF_UP);
     }
 
     // Métodos de negocio
     public void actualizarSubtotal() {
         if (precioUnitario != null && cantidad != null) {
-            this.subtotal = precioUnitario.multiply(new BigDecimal(cantidad));
+            this.subtotal = precioUnitario.multiply(new BigDecimal(cantidad)).setScale(2, java.math.RoundingMode.HALF_UP);
         }
     }
 

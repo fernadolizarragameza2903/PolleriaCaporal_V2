@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Boleta - Pedido</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" />
+    <style>
+        @media print { .no-print { display:none } }
+        body { font-family: Arial, sans-serif; }
+        .ticket { width: 320px; margin: 0 auto; }
+        .ticket h3, .ticket p { text-align:center; margin:4px 0 }
+        .items { width:100%; border-collapse: collapse; }
+        .items td { padding:4px; }
+        .right { text-align:right }
+    </style>
+</head>
+<body>
+<div class="ticket">
+    <h3>Pollería Caporal</h3>
+    <p>Boleta #: <span th:text="${pedido.id}"></span></p>
+    <p>Cliente: <span th:text="${pedido.clienteNombre}"></span></p>
+    <table class="items">
+        <tbody>
+        <tr th:each="d : ${pedido.detalles}">
+            <td th:text="${d.producto.nombre}"></td>
+            <td class="right" th:text="${d.cantidad}"></td>
+            <td class="right" th:text="${#numbers.formatDecimal(d.subtotal, 1, 'COMMA', 2, 'POINT')}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <hr/>
+    <p>Subtotal: <span th:text="${#numbers.formatDecimal(pedido.subtotal,1,'COMMA',2,'POINT')}"></span></p>
+    <p>IGV (18%): <span th:text="${#numbers.formatDecimal(pedido.igv,1,'COMMA',2,'POINT')}"></span></p>
+    <p><strong>Total: <span th:text="${#numbers.formatDecimal(pedido.total,1,'COMMA',2,'POINT')}"></span></strong></p>
+    <p class="no-print"><button onclick="window.print()">Imprimir</button> <a th:href="@{/empleados/pedidos}">Volver</a></p>
+</div>
+</body>
+</html>

@@ -14,6 +14,7 @@ com\polleriacaporal\service\ProductoService.class
 com\polleriacaporal\repository\ProductoRepository.class
 com\polleriacaporal\controller\EmpleadoController.class
 com\polleriacaporal\config\SecurityConfig.class
+com\polleriacaporal\controller\PedidoController.class
 com\polleriacaporal\config\CustomUserDetailsService.class
 com\polleriacaporal\controller\UsuarioController.class
 com\polleriacaporal\model\Empleado.class

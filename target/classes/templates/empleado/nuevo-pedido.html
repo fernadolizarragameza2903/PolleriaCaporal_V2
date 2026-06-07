@@ -57,20 +57,37 @@
                     </div>
 
                     <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>Productos Disponibles</h5>
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">Productos Disponibles</h5>
+                                <small class="text-muted">Filtra por nombre o categoría para ventas rápidas.</small>
+                            </div>
                         </div>
                         <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-6" th:each="producto : ${productos}">
-                                    <div class="card h-100 shadow-sm">
-                                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div class="mb-3">
+                                <input id="buscadorProductos" type="text" class="form-control" placeholder="Buscar producto por nombre...">
+                            </div>
+                            <div class="mb-3">
+                                <div class="btn-group" role="group" aria-label="Categorías de productos">
+                                    <button type="button" class="btn btn-outline-secondary active categoria-btn" data-categoria="Todos">Todos</button>
+                                    <button type="button" class="btn btn-outline-secondary categoria-btn" data-categoria="Pollo a la brasa">Pollos</button>
+                                    <button type="button" class="btn btn-outline-secondary categoria-btn" data-categoria="Bebidas">Bebidas</button>
+                                    <button type="button" class="btn btn-outline-secondary categoria-btn" data-categoria="Parrillas">Parrillas</button>
+                                    <button type="button" class="btn btn-outline-secondary categoria-btn" data-categoria="Promociones">Promociones</button>
+                                    <button type="button" class="btn btn-outline-secondary categoria-btn" data-categoria="Pastas">Pastas</button>
+                                    <button type="button" class="btn btn-outline-secondary categoria-btn" data-categoria="Extras">Extras</button>
+                                </div>
+                            </div>
+                            <div class="row g-3" id="gridProductos">
+                                <div class="col-md-6 col-xl-4" th:each="producto : ${productos}" th:data-categoria="${producto.categoria}">
+                                    <div class="card h-100 shadow-sm p-2">
+                                        <div class="card-body d-flex flex-column justify-content-between p-2">
                                             <div>
-                                                <h6 class="card-title" th:text="${producto.nombre}">Producto</h6>
-                                                <p class="mb-2 text-muted" th:text="${producto.categoria}">Categoría</p>
-                                                <p class="mb-0 fw-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio,1,2)}">S/ 0.00</p>
+                                                <h6 class="card-title mb-1" th:text="${producto.nombre}">Producto</h6>
+                                                <p class="text-muted small mb-2" th:text="${producto.categoria}">Categoría</p>
+                                                <p class="mb-0 fw-semibold">Precio: <span th:text="${'S/ ' + #numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}">S/ 0.00</span></p>
                                             </div>
-                                            <button type="button" class="btn btn-outline-primary btn-sm mt-3 add-producto"
+                                            <button type="button" class="btn btn-outline-primary btn-sm mt-3 add-producto w-100"
                                                     th:data-id="${producto.id}"
                                                     th:data-nombre="${producto.nombre}"
                                                     th:data-precio="${producto.precio}">
@@ -146,6 +163,9 @@
                 const totalEl = document.getElementById('total');
                 const productosJson = document.getElementById('productosJson');
                 const addButtons = document.querySelectorAll('.add-producto');
+                const buscador = document.getElementById('buscadorProductos');
+                const categoriaButtons = document.querySelectorAll('.categoria-btn');
+                const tarjetasProductos = document.querySelectorAll('#gridProductos > div');
 
                 function actualizarEntrega() {
                     if (tipoEntrega.value === 'mesa') {
@@ -160,9 +180,10 @@
                 tipoEntrega.addEventListener('change', actualizarEntrega);
                 actualizarEntrega();
 
-                function formatearMonto(value) {
-                    return 'S/ ' + value.toFixed(2);
-                }
+                    function formatearMonto(value) {
+                        return 'S/ ' + Number(value).toFixed(2);
+                    }
+
 
                 function actualizarResumen() {
                     const items = listaProductos.querySelectorAll('li');
@@ -172,24 +193,25 @@
                         mensajeResumen.style.display = 'none';
                     }
 
-                    let subtotal = 0;
+                    let total = 0;
                     const productos = [];
 
                     items.forEach(item => {
-                        const precio = parseFloat(item.dataset.precio);
+                        const precioConIgv = parseFloat(item.dataset.precio);
                         const cantidad = parseInt(item.querySelector('.cantidad').textContent, 10);
-                        const itemSubtotal = precio * cantidad;
-                        subtotal += itemSubtotal;
-                        item.querySelector('.subtotal').textContent = formatearMonto(itemSubtotal);
+                        const itemSubtotalConIgv = precioConIgv * cantidad;
+                        total += itemSubtotalConIgv;
+                        item.querySelector('.subtotal').textContent = formatearMonto(Number(itemSubtotalConIgv).toFixed(2));
                         productos.push(item.dataset.id + ':' + cantidad);
                     });
+                    // Here `total` already includes IGV because card prices are IGV-included.
+                    const totalConIgv = total;
+                    const subtotalSinIgv = totalConIgv / 1.18;
+                    const impuesto = totalConIgv - subtotalSinIgv;
 
-                    const impuesto = subtotal * 0.18;
-                    const total = subtotal + impuesto;
-
-                    subtotalEl.textContent = formatearMonto(subtotal);
-                    impuestoEl.textContent = formatearMonto(impuesto);
-                    totalEl.textContent = formatearMonto(total);
+                    subtotalEl.textContent = formatearMonto(Number(subtotalSinIgv).toFixed(2));
+                    impuestoEl.textContent = formatearMonto(Number(impuesto).toFixed(2));
+                    totalEl.textContent = formatearMonto(Number(totalConIgv).toFixed(2));
                     productosJson.value = productos.join(',');
                 }
 
@@ -213,9 +235,9 @@
                         </div>
                         <div class="text-end">
                             <div class="d-flex align-items-center justify-content-end gap-2 mb-2">
-                                <button type="button" class="btn btn-sm btn-outline-secondary btn-decrease">-</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-decrease" aria-label="Disminuir cantidad">-</button>
                                 <span class="cantidad">1</span>
-                                <button type="button" class="btn btn-sm btn-outline-secondary btn-increase">+</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-increase" aria-label="Aumentar cantidad">+</button>
                             </div>
                             <div class="d-flex align-items-center justify-content-end gap-2">
                                 <span class="subtotal">${formatearMonto(precio)}</span>
@@ -247,6 +269,28 @@
                     listaProductos.appendChild(li);
                     actualizarResumen();
                 }
+
+                function filtrarProductos() {
+                    const termino = buscador.value.trim().toLowerCase();
+                    const categoriaActiva = document.querySelector('.categoria-btn.active').dataset.categoria;
+
+                    tarjetasProductos.forEach(tarjeta => {
+                        const nombre = tarjeta.querySelector('.card-title').textContent.toLowerCase();
+                        const categoria = tarjeta.dataset.categoria;
+                        const coincideNombre = nombre.includes(termino);
+                        const coincideCategoria = categoriaActiva === 'Todos' || categoria === categoriaActiva;
+                        tarjeta.style.display = (coincideNombre && coincideCategoria) ? 'block' : 'none';
+                    });
+                }
+
+                buscador.addEventListener('input', filtrarProductos);
+                categoriaButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        categoriaButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        filtrarProductos();
+                    });
+                });
 
                 addButtons.forEach(button => {
                     button.addEventListener('click', function () {

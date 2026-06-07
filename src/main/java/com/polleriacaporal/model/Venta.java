@@ -21,7 +21,7 @@ public class Venta {
     private String productos;
     private BigDecimal total;
     @Enumerated(EnumType.STRING)
-    private EstadoVenta estado = EstadoVenta.PAGADO;
+    private EstadoVenta estado = EstadoVenta.COMPLETO;
     private LocalDateTime fecha = LocalDateTime.now();
 
     public Long getId() {

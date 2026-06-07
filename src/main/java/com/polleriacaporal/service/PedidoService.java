@@ -54,6 +54,33 @@ public class PedidoService {
      * Guarda un pedido
      */
     public Pedido guardar(Pedido pedido) {
+        // Asegurar que cada detalle tenga precio unitario y subtotal actualizado
+        if (pedido.getDetalles() != null) {
+            pedido.getDetalles().forEach(d -> {
+                if (d.getProducto() != null && d.getProducto().getPrecio() != null) {
+                    // Persist the unit price as stored in Producto (treated as IGV-included final price)
+                    d.setPrecioUnitario(d.getProducto().getPrecio());
+                }
+                d.actualizarSubtotal();
+            });
+        }
+
+        // Calcular totales (subtotal, igv, total) antes de persistir
+        pedido.calcularTotal();
+
+        return pedidoRepository.save(pedido);
+    }
+
+    /**
+     * Actualiza el estado de un pedido y lo persiste
+     */
+    public Pedido actualizarEstado(Long pedidoId, com.polleriacaporal.model.EstadoVenta nuevoEstado) {
+        var opt = pedidoRepository.findById(pedidoId);
+        if (opt.isEmpty()) {
+            throw new IllegalArgumentException("Pedido no encontrado: " + pedidoId);
+        }
+        Pedido pedido = opt.get();
+        pedido.setEstado(nuevoEstado);
         return pedidoRepository.save(pedido);
     }
 

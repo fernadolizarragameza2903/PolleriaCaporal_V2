@@ -3,6 +3,7 @@ package com.polleriacaporal.controller;
 import com.polleriacaporal.model.Pedido;
 import com.polleriacaporal.model.Producto;
 import com.polleriacaporal.model.Usuario;
+import com.polleriacaporal.model.EstadoVenta;
 import com.polleriacaporal.service.PedidoService;
 import com.polleriacaporal.service.ProductoService;
 import com.polleriacaporal.service.UsuarioService;
@@ -42,38 +43,28 @@ public class AdminController {
     public String dashboard(Authentication authentication, Model model) {
         model.addAttribute("username", authentication.getName());
         model.addAttribute("activePage", "admin-dashboard");
-        // Agregar estadísticas
-        model.addAttribute("totalUsuarios", usuarioService.obtenerTodos().size());
-        model.addAttribute("totalProductos", productoService.findAll().size());
-        model.addAttribute("totalVentas", pedidoService.obtenerTodos().size());
 
-        // Agregar actividades recientes
-        List<String> actividades = new ArrayList<>();
-        // Últimos pedidos
-        List<Pedido> ultimosPedidos = pedidoService.obtenerTodos().stream()
-                .sorted(Comparator.comparing(Pedido::getFechaPedido).reversed())
-                .limit(3)
-                .toList();
-        for (Pedido p : ultimosPedidos) {
-            actividades.add("Nuevo pedido: " + p.getClienteNombre() + " - " + p.getTotal());
-        }
-        // Últimos usuarios
-        List<Usuario> ultimosUsuarios = usuarioService.obtenerTodos().stream()
-                .sorted(Comparator.comparing(Usuario::getFechaCreacion).reversed())
-                .limit(2)
-                .toList();
-        for (Usuario u : ultimosUsuarios) {
-            actividades.add("Nuevo usuario: " + u.getUsername());
-        }
-        // Últimos productos
-        List<Producto> ultimosProductos = productoService.findAll().stream()
-                .sorted(Comparator.comparing(Producto::getFechaCreacion).reversed())
-                .limit(2)
-                .toList();
-        for (Producto pr : ultimosProductos) {
-            actividades.add("Nuevo producto: " + pr.getNombre());
-        }
-        model.addAttribute("actividadesRecientes", actividades);
+        // 1) Reportes globales de ventas
+        var pedidos = pedidoService.obtenerTodos();
+        model.addAttribute("totalVentas", pedidos.size());
+        var montoTotal = pedidos.stream().map(p -> p.getTotal() == null ? java.math.BigDecimal.ZERO : p.getTotal())
+            .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        model.addAttribute("montoTotal", montoTotal);
+        long pedidosCompletados = pedidos.stream().filter(p -> p.getEstado() == com.polleriacaporal.model.EstadoVenta.COMPLETO).count();
+        model.addAttribute("pedidosCompletados", pedidosCompletados);
+
+        // 2) Gestión de usuarios
+        model.addAttribute("totalUsuarios", usuarioService.obtenerTodos().size());
+
+        // 3) Reportes de rendimiento de productos (más vendidos)
+        var top = pedidoService.obtenerTodos().stream()
+            .flatMap(p -> p.getDetalles().stream())
+            .collect(java.util.stream.Collectors.groupingBy(d -> d.getProducto().getNombre(), java.util.stream.Collectors.summingInt(d -> d.getCantidad())))
+            .entrySet().stream()
+            .sorted(java.util.Map.Entry.<String,Integer>comparingByValue().reversed())
+            .limit(10)
+            .toList();
+        model.addAttribute("topProductos", top);
 
         return "admin/dashboard";
     }
@@ -108,6 +99,8 @@ public class AdminController {
     public String pedidos(Model model) {
         model.addAttribute("activePage", "pedidos-admin");
         model.addAttribute("pedidos", pedidoService.obtenerTodos());
+        model.addAttribute("productos", productoService.findAll());
+        model.addAttribute("estados", EstadoVenta.values());
         return "admin/pedidos";
     }
 }

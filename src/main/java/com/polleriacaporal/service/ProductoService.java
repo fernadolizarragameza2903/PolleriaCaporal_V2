@@ -24,9 +24,20 @@ public class ProductoService {
             return;
         }
 
-        save(productoEjemplo("Pollo a la brasa", "Pollo", new BigDecimal("35.00"), 40, true));
-        save(productoEjemplo("Papas fritas", "Papas", new BigDecimal("12.00"), 80, true));
-        save(productoEjemplo("Gaseosa 500ml", "Bebidas", new BigDecimal("8.00"), 24, false));
+        save(productoEjemplo("1/4 de Pollo a la brasa con papas y ensalada", "Pollo a la brasa", new BigDecimal("20.00"), 50, true));
+        save(productoEjemplo("1/2 Pollo a la brasa con papas y ensalada", "Pollo a la brasa", new BigDecimal("38.00"), 40, true));
+        save(productoEjemplo("1 Pollo entero a la brasa con papas y ensalada", "Pollo a la brasa", new BigDecimal("70.00"), 20, true));
+
+        save(productoEjemplo("Inka Kola 1.5 Litros", "Bebidas", new BigDecimal("12.00"), 60, true));
+        save(productoEjemplo("Coca Cola 1.5 Litros", "Bebidas", new BigDecimal("12.00"), 60, true));
+        save(productoEjemplo("Inka Kola 3 Litros", "Bebidas", new BigDecimal("20.00"), 40, true));
+
+        save(productoEjemplo("Combo Mostrito (1/4 pollo + chaufa + papas)", "Promociones", new BigDecimal("24.00"), 30, true));
+
+        save(productoEjemplo("Porción de papas fritas extra", "Extras", new BigDecimal("10.00"), 100, true));
+        save(productoEjemplo("Porción de Arroz Chaufa extra", "Extras", new BigDecimal("12.00"), 80, true));
+
+        save(productoEjemplo("Anticuchos (3 palitos con papa)", "Parrillas", new BigDecimal("18.00"), 50, true));
     }
 
     public List<Producto> findAll() {
