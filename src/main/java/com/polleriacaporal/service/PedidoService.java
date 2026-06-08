@@ -132,7 +132,7 @@ public class PedidoService {
                 java.util.stream.Collectors.summingInt(DetallePedido::getCantidad)
             ))
             .entrySet().stream()
-            .sorted(java.util.Map.Entry.comparingByValue().reversed())
+            .sorted(java.util.Map.Entry.<String, Integer>comparingByValue().reversed())
             .limit(limite)
             .toList();
     }
