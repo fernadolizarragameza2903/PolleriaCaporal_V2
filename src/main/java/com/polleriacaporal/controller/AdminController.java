@@ -56,15 +56,8 @@ public class AdminController {
         // 2) Gestión de usuarios
         model.addAttribute("totalUsuarios", usuarioService.obtenerTodos().size());
 
-        // 3) Reportes de rendimiento de productos (más vendidos)
-        var top = pedidoService.obtenerTodos().stream()
-            .flatMap(p -> p.getDetalles().stream())
-            .collect(java.util.stream.Collectors.groupingBy(d -> d.getProducto().getNombre(), java.util.stream.Collectors.summingInt(d -> d.getCantidad())))
-            .entrySet().stream()
-            .sorted(java.util.Map.Entry.<String,Integer>comparingByValue().reversed())
-            .limit(10)
-            .toList();
-        model.addAttribute("topProductos", top);
+        model.addAttribute("topProductos",
+            pedidoService.obtenerTopProductos(10));
 
         return "admin/dashboard";
     }

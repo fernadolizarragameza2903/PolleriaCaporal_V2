@@ -30,8 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Rutas públicas
                         .requestMatchers("/", "/inicio", "/css/**", "/js/**", "/img/**", "/login").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        
+
                         // Rutas del Admin
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/usuarios/**").hasRole("ADMIN")
@@ -63,8 +62,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 // Desactivar CSRF para desarrollo (en producción, usar CSRF token)
-                .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }

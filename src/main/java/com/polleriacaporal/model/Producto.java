@@ -2,8 +2,10 @@ package com.polleriacaporal.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +16,12 @@ import java.util.List;
  * Incluye información de nombre, precio, stock y categoría
  */
 @Entity
-@Table(name = "productos")
+@Table(name = "productos",
+       indexes = {
+           @Index(name = "idx_productos_categoria", columnList = "categoria"),
+           @Index(name = "idx_productos_estado", columnList = "estado")
+       }
+)
 public class Producto {
 
     @Id
@@ -22,24 +29,28 @@ public class Producto {
     private Long id;
 
     @NotBlank(message = "El nombre del producto es requerido")
-    @Column(nullable = false)
+    @Size(max = 150, message = "El nombre no puede exceder 150 caracteres")
+    @Column(name = "nombre", nullable = false, length = 150)
     private String nombre;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
-    @Column(name = "categoria")
+    @Size(max = 50, message = "La categoría no puede exceder 50 caracteres")
+    @Column(name = "categoria", length = 50)
     private String categoria;
 
+    @NotNull(message = "El precio es requerido")
     @Positive(message = "El precio debe ser mayor a 0")
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(name = "precio", nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
+    @NotNull(message = "El stock es requerido")
     @PositiveOrZero(message = "El stock debe ser mayor o igual a 0")
     @Column(name = "stock", nullable = false)
     private Integer stock = 0;
 
-    @Column(nullable = false)
+    @Column(name = "estado", nullable = false)
     private Boolean estado = Boolean.TRUE;
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
@@ -48,8 +59,10 @@ public class Producto {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-    // Relación OneToMany: Un producto puede aparecer en varios detalles de pedidos
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = false)
+    @OneToMany(mappedBy = "producto",
+               cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+               orphanRemoval = false,
+               fetch = FetchType.LAZY)
     private List<DetallePedido> detallesPedidos = new ArrayList<>();
 
     @PrePersist

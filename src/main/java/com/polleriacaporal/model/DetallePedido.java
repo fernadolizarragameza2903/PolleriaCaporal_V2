@@ -1,7 +1,9 @@
 package com.polleriacaporal.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 
 /**
@@ -10,31 +12,41 @@ import java.math.BigDecimal;
  * Contiene: cantidad, producto y subtotal
  */
 @Entity
-@Table(name = "detalles_pedido")
+@Table(name = "detalles_pedido",
+       indexes = {
+           @Index(name = "idx_detalles_pedido_id", columnList = "pedido_id"),
+           @Index(name = "idx_detalles_producto_id", columnList = "producto_id")
+       }
+)
 public class DetallePedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "La cantidad es requerida")
     @Positive(message = "La cantidad debe ser mayor a 0")
-    @Column(nullable = false)
+    @Column(name = "cantidad", nullable = false)
     private Integer cantidad;
 
+    @NotNull(message = "El precio unitario es requerido")
+    @Positive(message = "El precio unitario debe ser mayor a 0")
     @Column(name = "precio_unitario", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioUnitario;
 
+    @NotNull(message = "El subtotal es requerido")
+    @PositiveOrZero(message = "El subtotal debe ser mayor o igual a 0")
     @Column(name = "subtotal", nullable = false, precision = 12, scale = 2)
     private BigDecimal subtotal;
 
-    // Relación ManyToOne: Varios detalles pertenecen a un pedido
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "pedido_id", nullable = false)
+    @JoinColumn(name = "pedido_id", nullable = false,
+                foreignKey = @ForeignKey(name = "fk_detalles_pedido"))
     private Pedido pedido;
 
-    // Relación ManyToOne: Varios detalles pueden referir al mismo producto
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "producto_id", nullable = false)
+    @JoinColumn(name = "producto_id", nullable = false,
+                foreignKey = @ForeignKey(name = "fk_detalles_producto"))
     private Producto producto;
 
     @PrePersist

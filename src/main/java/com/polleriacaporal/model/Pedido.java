@@ -12,7 +12,13 @@ import java.util.List;
  * Contiene información del cliente, fecha, total y detalles del pedido
  */
 @Entity
-@Table(name = "pedidos")
+@Table(name = "pedidos",
+       indexes = {
+           @Index(name = "idx_pedidos_estado", columnList = "estado"),
+           @Index(name = "idx_pedidos_fecha", columnList = "fecha_pedido"),
+           @Index(name = "idx_pedidos_usuario", columnList = "usuario_id")
+       }
+)
 public class Pedido {
 
     @Id
@@ -22,13 +28,13 @@ public class Pedido {
     @Column(name = "fecha_pedido", nullable = false, updatable = false)
     private LocalDateTime fechaPedido;
 
-    @Column(name = "cliente_nombre")
+    @Column(name = "cliente_nombre", length = 100)
     private String clienteNombre;
 
-    @Column(name = "cliente_telefono")
+    @Column(name = "cliente_telefono", length = 20)
     private String clienteTelefono;
 
-    @Column(name = "cliente_direccion")
+    @Column(name = "cliente_direccion", length = 200)
     private String clienteDireccion;
 
     @PositiveOrZero(message = "El subtotal no puede ser negativo")
@@ -39,14 +45,14 @@ public class Pedido {
     private BigDecimal igv = BigDecimal.ZERO;
 
     @PositiveOrZero(message = "El total no puede ser negativo")
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(name = "total", nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
 
     @Column(name = "nota", columnDefinition = "TEXT")
     private String nota;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "estado", nullable = false, length = 20)
     private EstadoVenta estado = EstadoVenta.PENDIENTE;
 
     @Column(name = "fecha_entrega")
@@ -55,13 +61,15 @@ public class Pedido {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-    // Relación ManyToOne: Un pedido es atendido por un usuario
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false,
+                foreignKey = @ForeignKey(name = "fk_pedidos_usuario"))
     private Usuario usuario;
 
-    // Relación OneToMany: Un pedido puede tener varios detalles
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "pedido",
+               cascade = CascadeType.ALL,
+               orphanRemoval = true,
+               fetch = FetchType.EAGER)
     private List<DetallePedido> detalles = new ArrayList<>();
 
     @PrePersist

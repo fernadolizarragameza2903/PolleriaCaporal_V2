@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import com.polleriacaporal.model.DetallePedido;
 
 /**
  * Servicio para la gestión de Pedidos
@@ -28,7 +31,25 @@ public class PedidoService {
      */
     @Transactional(readOnly = true)
     public List<Pedido> obtenerTodos() {
-        return pedidoRepository.findAll();
+        List<Pedido> pedidos = pedidoRepository.findAllWithUsuarioAndDetallesProducto();
+        pedidos.forEach(pedido -> {
+            if (pedido.getUsuario() != null) {
+                pedido.getUsuario().getUsername();
+            }
+            pedido.getDetalles().forEach(detalle -> {
+                if (detalle.getProducto() != null) {
+                    detalle.getProducto().getNombre();
+                }
+            });
+        });
+        return pedidos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<java.util.Map.Entry<String, Integer>> obtenerTopProductosVendidos() {
+        return pedidoRepository.findTopProductosVendidos().stream()
+            .map(row -> java.util.Map.entry((String) row[0], ((Number) row[1]).intValue()))
+            .toList();
     }
 
     /**
@@ -39,7 +60,18 @@ public class PedidoService {
         if (id == null) {
             return Optional.empty();
         }
-        return pedidoRepository.findById(id);
+        Optional<Pedido> pedido = pedidoRepository.findByIdWithUsuarioAndDetallesProducto(id);
+        pedido.ifPresent(p -> {
+            if (p.getUsuario() != null) {
+                p.getUsuario().getUsername();
+            }
+            p.getDetalles().forEach(detalle -> {
+                if (detalle.getProducto() != null) {
+                    detalle.getProducto().getNombre();
+                }
+            });
+        });
+        return pedido;
     }
 
     /**
@@ -89,5 +121,19 @@ public class PedidoService {
      */
     public void eliminarPorId(Long id) {
         pedidoRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map.Entry<String, Integer>> obtenerTopProductos(int limite) {
+        return pedidoRepository.findAll().stream()
+            .flatMap(p -> p.getDetalles().stream())
+            .collect(java.util.stream.Collectors.groupingBy(
+                d -> d.getProducto().getNombre(),
+                java.util.stream.Collectors.summingInt(DetallePedido::getCantidad)
+            ))
+            .entrySet().stream()
+            .sorted(java.util.Map.Entry.comparingByValue().reversed())
+            .limit(limite)
+            .toList();
     }
 }

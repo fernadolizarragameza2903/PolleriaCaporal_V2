@@ -2,6 +2,7 @@ com\polleriacaporal\repository\DetallePedidoRepository.class
 com\polleriacaporal\repository\PedidoRepository.class
 com\polleriacaporal\controller\MainController.class
 com\polleriacaporal\service\UsuarioService.class
+com\polleriacaporal\service\PedidoPdfService.class
 com\polleriacaporal\repository\UsuarioRepository.class
 com\polleriacaporal\model\Producto.class
 com\polleriacaporal\model\Venta.class
