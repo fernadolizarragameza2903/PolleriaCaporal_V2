@@ -2,10 +2,6 @@ package com.polleriacaporal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,43 +32,40 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Configurar autorización de rutas
-                .authorizeHttpRequests(authorize -> authorize
-                        // Rutas públicas
-                        .requestMatchers("/", "/inicio", "/css/**", "/js/**", "/img/**", "/login").permitAll()
-
-                        // Rutas del Admin
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/usuarios/**").hasRole("ADMIN")
-                        // Permitir gestión básica de productos también a empleados (actualizar stock, ver catálogo)
-                        .requestMatchers("/productos/**").hasAnyRole("ADMIN", "EMPLOYEE")
-                        .requestMatchers("/reportes/**").hasRole("ADMIN")
-                        
-                        // Rutas del Empleado
-                        .requestMatchers("/empleados/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/ventas/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/pedidos/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        
-                        // Cualquier otra solicitud requiere autenticación
-                        .anyRequest().authenticated()
-                )
-                // Configurar login
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
-                // Configurar logout
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/inicio")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll()
-                )
-                // Desactivar CSRF para desarrollo (en producción, usar CSRF token)
-                .csrf(csrf -> csrf.disable());
+            .userDetailsService(customUserDetailsService)
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/", "/inicio", "/css/**", "/js/**", "/img/**", "/login").permitAll()
+                
+                // Dashboard intermedio
+                .requestMatchers("/dashboard").authenticated()
+                
+                // Rutas del Admin
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/usuarios/**").hasRole("ADMIN")
+                .requestMatchers("/reportes/**").hasRole("ADMIN")
+                
+                // Rutas compartidas
+                .requestMatchers("/productos/**").hasAnyRole("ADMIN", "EMPLOYEE")
+                .requestMatchers("/empleados/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                .requestMatchers("/ventas/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                .requestMatchers("/pedidos/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/inicio")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
