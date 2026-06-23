@@ -13,10 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Implementación de UserDetailsService para Spring Security
- * Carga los usuarios de la base de datos
- */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -28,16 +24,30 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        System.out.println(">>> [LOGIN] Buscando usuario: " + username);
+
         Usuario usuario = usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+                .orElseThrow(() -> {
+                    System.out.println(">>> [LOGIN] Usuario NO encontrado en BD: " + username);
+                    return new UsernameNotFoundException("Usuario no encontrado: " + username);
+                });
+
+        System.out.println(">>> [LOGIN] Usuario encontrado: " + usuario.getUsername());
+        System.out.println(">>> [LOGIN] Rol: " + usuario.getRol());
+        System.out.println(">>> [LOGIN] Estado: " + usuario.getEstado());
+        System.out.println(">>> [LOGIN] Password hash: " + usuario.getPassword().substring(0, 10) + "...");
 
         if (!usuario.getEstado()) {
+            System.out.println(">>> [LOGIN] Usuario INACTIVO, bloqueando acceso");
             throw new UsernameNotFoundException("Usuario inactivo: " + username);
         }
 
         List<GrantedAuthority> authorities = Collections.singletonList(
                 new SimpleGrantedAuthority(usuario.getRol().name())
         );
+
+        System.out.println(">>> [LOGIN] Authorities asignadas: " + authorities);
 
         return new User(
                 usuario.getUsername(),
