@@ -16,26 +16,46 @@ public class DataSeedConfig {
     @Transactional
     CommandLineRunner seedUsuariosDemo(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if (usuarioRepository.count() > 0) {
-                return;
-            }
-
-            Usuario admin = new Usuario();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setNombreCompleto("Administrador");
-            admin.setRol(RolUsuario.ROLE_ADMIN);
-            admin.setEstado(true);
-
-            Usuario employee = new Usuario();
-            employee.setUsername("empleado");
-            employee.setPassword(passwordEncoder.encode("emp123"));
-            employee.setNombreCompleto("Mesero prototipo");
-            employee.setRol(RolUsuario.ROLE_EMPLOYEE);
-            employee.setEstado(true);
-
-            usuarioRepository.save(admin);
-            usuarioRepository.save(employee);
+            upsertUsuarioDemo(
+                    usuarioRepository,
+                    passwordEncoder,
+                    "admin",
+                    "admin123",
+                    "Administrador",
+                    RolUsuario.ROLE_ADMIN
+            );
+            upsertUsuarioDemo(
+                    usuarioRepository,
+                    passwordEncoder,
+                    "empleado",
+                    "emp123",
+                    "Mesero prototipo",
+                    RolUsuario.ROLE_EMPLOYEE
+            );
         };
+    }
+
+    private void upsertUsuarioDemo(
+            UsuarioRepository usuarioRepository,
+            PasswordEncoder passwordEncoder,
+            String username,
+            String rawPassword,
+            String nombreCompleto,
+            RolUsuario rol
+    ) {
+        Usuario usuario = usuarioRepository.findByUsername(username).orElseGet(() -> {
+            Usuario nuevoUsuario = new Usuario();
+            nuevoUsuario.setUsername(username);
+            return nuevoUsuario;
+        });
+
+        if (usuario.getPassword() == null || !passwordEncoder.matches(rawPassword, usuario.getPassword())) {
+            usuario.setPassword(passwordEncoder.encode(rawPassword));
+        }
+        usuario.setNombreCompleto(nombreCompleto);
+        usuario.setRol(rol);
+        usuario.setEstado(true);
+
+        usuarioRepository.save(usuario);
     }
 }
