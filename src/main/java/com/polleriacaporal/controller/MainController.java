@@ -44,19 +44,18 @@ public class MainController {
      */
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
-        String rol = authentication.getAuthorities().stream()
-                .map(auth -> auth.getAuthority())
-                .findFirst()
-                .orElse("ROLE_EMPLOYEE");
+        boolean esAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        String rol = esAdmin ? "ROLE_ADMIN" : "ROLE_EMPLOYEE";
 
         model.addAttribute("username", authentication.getName());
         model.addAttribute("rol", rol);
 
-        if (rol.equals("ROLE_ADMIN")) {
+        if (esAdmin) {
             return "redirect:/admin/dashboard";
-        } else {
-            return "redirect:/empleados/dashboard";
         }
+
+        return "redirect:/empleados/dashboard";
     }
 
     /**
