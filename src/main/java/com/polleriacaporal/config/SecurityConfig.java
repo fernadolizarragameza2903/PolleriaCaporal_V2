@@ -44,7 +44,7 @@ public class SecurityConfig {
             .userDetailsService(customUserDetailsService)
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/inicio", "/css/**", "/js/**", "/img/**", "/login").permitAll()
+                .requestMatchers("/", "/css/**", "/js/**", "/img/**", "/login").permitAll()
                 
                 // Dashboard intermedio
                 .requestMatchers("/dashboard").authenticated()
@@ -70,7 +70,7 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/inicio")
+                .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()

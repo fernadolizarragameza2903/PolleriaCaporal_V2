@@ -23,12 +23,11 @@ public class MainController {
     }
 
     /**
-     * Página de inicio pública
+     * Redirección pública principal al login
      */
     @GetMapping({"/", "/index", "/inicio"})
-    public String home(Model model) {
-        model.addAttribute("activePage", "inicio");
-        return "inicio";
+    public String home() {
+        return "redirect:/login";
     }
 
     /**

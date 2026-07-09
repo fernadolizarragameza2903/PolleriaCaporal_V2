@@ -1,5 +1,11 @@
-# Compiled classes
+# Compiled classes and build output
 target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
 
 # IDE files
 .idea/
