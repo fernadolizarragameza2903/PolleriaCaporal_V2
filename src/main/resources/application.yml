@@ -5,10 +5,10 @@ spring:
     virtual:
       enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/polleria_caporal
+    url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: admin123
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
