@@ -71,13 +71,30 @@ public class Usuario {
 
     @PrePersist
     protected void onCreate() {
+        normalizarCamposOpcionales();
         fechaCreacion = LocalDateTime.now();
         fechaActualizacion = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
+        normalizarCamposOpcionales();
         fechaActualizacion = LocalDateTime.now();
+    }
+
+    /**
+     * PostgreSQL no considera las cadenas vacias como NULL. Antes de persistir
+     * o actualizar, convertimos los campos opcionales en blanco a null para que
+     * las restricciones CHECK opcionales se evalúen correctamente.
+     */
+    private void normalizarCamposOpcionales() {
+        nombreCompleto = normalizarTextoOpcional(nombreCompleto);
+        email = normalizarTextoOpcional(email);
+        telefono = normalizarTextoOpcional(telefono);
+    }
+
+    private String normalizarTextoOpcional(String valor) {
+        return valor == null || valor.trim().isEmpty() ? null : valor;
     }
 
     // Constructores
